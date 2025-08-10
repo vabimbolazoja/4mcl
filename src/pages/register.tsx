@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sprout, Eye, EyeOff, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Logo from "../../../attached_assets/logoSvg.svg"
+import Logo from "../../attached_assets/logoSvg.svg"
 import authService from "../services/auth-service"
 import Cookie from 'js-cookie'
 export default function Register() {

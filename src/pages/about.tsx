@@ -2,7 +2,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Leaf, Users, Heart, Globe } from "lucide-react";
-import heroiMG from "../../../attached_assets/WhatsApp Image 2025-07-06 at 08.28.25.jpeg"
+import heroiMG from "../../attached_assets/WhatsApp Image 2025-07-06 at 08.28.25.jpeg"
 
 export default function About() {
   const values = [

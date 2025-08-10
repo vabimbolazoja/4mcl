@@ -3,21 +3,20 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sprout, Eye, EyeOff } from "lucide-react";
+import { Sprout, Eye, EyeOff,Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Logo from "../../../attached_assets/logoSvg.svg"
+import Logo from "../../attached_assets/logoSvg.svg"
 import authService from "../services/auth-service"
-import { useLocation } from "wouter";
-
+import Cookie from "js-cookie"
 export default function Login() {
   const [formData, setFormData] = useState({
-    email: '',
+    confirmPassword: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [location, setLocation] = useLocation();
   const [isResending,setIsLoadingResend] =  useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,79 +26,61 @@ export default function Login() {
     }));
   };
 
+  const passwordRequirements = [
+    { text: "At least 8 characters", met: formData.password.length >= 8 },
+    { text: "Contains uppercase letter", met: /[A-Z]/.test(formData.password) },
+    { text: "Contains lowercase letter", met: /[a-z]/.test(formData.password) },
+    { text: "Contains number", met: /\d/.test(formData.password) },
+  ];
+
+  const url = new URL(window.location.href);
+  const token = url.searchParams.get("token");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+        toast({
+          title: "Password mismatch",
+          description: "Passwords do not match. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
     setIsLoading(true);
     const data = {
-      email: formData?.email,
-      password: formData?.password
+      password: formData?.password,
+      token:token
     }
     try {
-      const result = await authService.login(data);
+      const result = await authService.resetPassword(data);
       if (result) {
         setIsLoading(false)
-        var token = result?.token;
-        sessionStorage.setItem('4mttoken', token)
-        sessionStorage.setItem('4mtfname', result?.firstName + " " + result?.lastName)
-        sessionStorage.setItem('username', result?.firstName)
-        sessionStorage?.setItem('4mtxxd',result?.user._id)
-        sessionStorage.setItem('4mtxxm',result.user.email)
-
         toast({
-          title: "Login Successful",
+          title: "Password Reset Successful",
           description: result?.message,
         });
         setTimeout(() => {
-          setLocation('/')
-        },1400)
+            window.location.href = "/login"
+        },3000)
       }
       else{
         setIsLoading(false)
         toast({
-          title: "Login failed",
-          description: result?.message,
+            title: "Password Reset Successful",
+            description: result?.message,
           variant: "destructive",
         });
       }
     } catch (err:any) {
       setIsLoading(false)
       toast({
-        title: "Login failed",
+        title: "Password Reset Successful",
         description: err?.response?.data?.message,
         variant: "destructive",
       });
     }
   };
 
-  const resendVerify = async () => {
-    setIsLoadingResend(true);
-    try {
-      const result = await authService.resendMailVerify({email:formData?.email});
-      if (result) {
-        setIsLoadingResend(false)
-        toast({
-          title: "Resend Verification Mail",
-          description: result?.message,
-        });
-      }
-      else{
-        setIsLoadingResend(false)
-        toast({
-          title: "Resend Verification Mail",
-          description: result?.message,
-          variant: "destructive",
-        });
-      }
-    } catch (err:any) {
-      setIsLoadingResend(false)
-      toast({
-        title: "Resend Verification Mail",
-        description: err?.response?.data?.message,
-        variant: "destructive",
-      });
-    }
-  }
 
   
 
@@ -117,31 +98,14 @@ export default function Login() {
 
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="text-2xl font-bold text-slate-900 mb-2">Welcome Back</CardTitle>
-            <p className="text-slate-600">Sign in to your account to continue</p>
+            <CardTitle className="text-2xl font-bold text-slate-900 mb-2">Reset Your Password</CardTitle>
+            <p className="text-slate-600">Reset your account password to continue</p>
           </CardHeader>
 
           <CardContent className="pt-0">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                  Email Address
-                </label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full"
-                  placeholder="your@email.com"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                  Password
+            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+                  New Password
                 </label>
                 <div className="relative">
                   <Input
@@ -152,7 +116,7 @@ export default function Login() {
                     onChange={handleInputChange}
                     required
                     className="w-full pr-12"
-                    placeholder="Enter your password"
+                    placeholder="Create a strong password"
                   />
                   <button
                     type="button"
@@ -162,16 +126,48 @@ export default function Login() {
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
+                
+                {/* Password Requirements */}
+                {formData.password && (
+                  <div className="mt-3 space-y-2">
+                    {passwordRequirements.map((req, index) => (
+                      <div key={index} className="flex items-center text-sm">
+                        <Check className={`h-4 w-4 mr-2 ${req.met ? 'text-green-500' : 'text-slate-300'}`} />
+                        <span className={req.met ? 'text-green-700' : 'text-slate-500'}>{req.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full pr-12"
+                    placeholder="Confirm your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="mt-2 text-sm text-red-600">Passwords do not match</p>
+                )}
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="" onClick={resendVerify}>
-                  <span className=" text-sm text-primary-600 hover:text-primary-700">{isResending ? "Sending" : "Resend Verification Mail?"}</span>
-                </div>
-                <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700">
-                  Forgot password?
-                </Link>
-              </div>
+              
 
               <Button
                 type="submit"

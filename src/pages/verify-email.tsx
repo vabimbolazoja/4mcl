@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sprout, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Logo from "../../../attached_assets/logoSvg.svg"
+import Logo from "../../attached_assets/logoSvg.svg"
 import authService from "../services/auth-service"
 import Cookie from "js-cookie"
-import mailbox from "../../../attached_assets/shape-box.svg"
+import mailbox from "../../attached_assets/shape-box.svg"
 import { ThreeDots } from "react-loader-spinner";
 export default function VerifyMail() {
   const [formData, setFormData] = useState({

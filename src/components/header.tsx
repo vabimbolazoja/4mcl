@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Sprout, Search, ShoppingCart, Menu, X } from "lucide-react";
-import Logo from "../../../attached_assets/logoSvg.svg"
+import Logo from "../../attached_assets/logoSvg.svg"
 import { useCart } from '../context/cartContext';
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

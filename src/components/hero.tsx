@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Truck, Shield } from "lucide-react";
-import heroiMG from "../../../attached_assets/WhatsApp Image 2025-07-06 at 08.28.25.jpeg"
+import heroiMG from "../../attached_assets/WhatsApp Image 2025-07-06 at 08.28.25.jpeg"
 export default function Hero() {
   return (
     <section className="bg-gradient-to-r from-primary-50 to-emerald-50 py-12 sm:py-16 lg:py-20">
