@@ -1,6 +1,6 @@
 export default {
-      baseUrl: "http://localhost:7002/api/",
-      baseurl: "http://localhost:7002/api/",
+      baseUrl: "https://4mserve.vercel.app/",
+      baseurl: "https://4mserve.vercel.app/",
 
   };
   
