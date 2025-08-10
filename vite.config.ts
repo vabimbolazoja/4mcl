@@ -1,36 +1,20 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
-  ],
+  root: path.resolve(__dirname, "client"),  // client folder where index.html lives
+  plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client", "src"),
-      "@shared": path.resolve(__dirname, "shared"),
-      "@assets": path.resolve(__dirname, "attached_assets"),
+      "@": path.resolve(__dirname, "client/src"),  // @ for imports inside client/src
+      "@shared": path.resolve(__dirname, "shared"),  // if you have shared folder at root
+      "@assets": path.resolve(__dirname, "attached_assets"),  // your assets folder at root
     },
   },
-  root: path.resolve(__dirname, "client"), // point root to client folder
   build: {
-    outDir: path.resolve(__dirname, "dist/public"), // output to dist/public in root
-    emptyOutDir: true,
+    outDir: path.resolve(__dirname, "dist"),  // build output at root/dist
+    emptyOutDir: true,  // clean dist folder before build
   },
   server: {
     fs: {
