@@ -47,6 +47,21 @@ export default function Cart() {
     0
   );
 
+  const handleAddressSelect = (data) => {
+    if(sessionStorage?.getItem('4mttoken')){
+    setFormData(prev => ({
+      ...prev,
+      deliveryAddress: data.formatted_address || ""
+    }));
+  }
+  else{
+    setGuestData(prev => ({
+      ...prev,
+      deliveryAddress: data.formatted_address || ""
+    }));
+  }
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
@@ -287,7 +302,7 @@ export default function Cart() {
                       </div>
 
                       <div className="flex items-center justify-center space-x-2">
-                       
+
                         <span className="mx-3 font-medium w-8 text-center">{item.quantity}</span>
                         <Button
                           variant="outline"
@@ -465,7 +480,7 @@ export default function Cart() {
                           {guestForm ?
                             <div>
                               <form onSubmit={handleGuestPay} className="space-y-6">
-                              <div>
+                                <div>
                                   <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                                     Full Name
                                   </label>
@@ -522,7 +537,7 @@ export default function Cart() {
                                     Delivery Address
                                   </label>
                                   <div className="relative">
-                                    <Location setAddObj={setAddObj} />
+                                    <AddressAutocomplete onSelect={handleAddressSelect} />
 
                                   </div>
                                 </div>
