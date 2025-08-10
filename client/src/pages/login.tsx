@@ -165,9 +165,10 @@ export default function Login() {
               </div>
 
               <div className="flex items-center justify-between">
+                {formData?.email &&
                 <div className="" onClick={resendVerify}>
                   <span className=" text-sm text-primary-600 hover:text-primary-700">{isResending ? "Sending" : "Resend Verification Mail?"}</span>
-                </div>
+                </div>}
                 <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700">
                   Forgot password?
                 </Link>

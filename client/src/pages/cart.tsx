@@ -48,18 +48,18 @@ export default function Cart() {
   );
 
   const handleAddressSelect = (data) => {
-    if(sessionStorage?.getItem('4mttoken')){
-    setFormData(prev => ({
-      ...prev,
-      deliveryAddress: data.formatted_address || ""
-    }));
-  }
-  else{
-    setGuestData(prev => ({
-      ...prev,
-      deliveryAddress: data.formatted_address || ""
-    }));
-  }
+    if (sessionStorage?.getItem('4mttoken')) {
+      setFormData(prev => ({
+        ...prev,
+        deliveryAddress: data.formatted_address || ""
+      }));
+    }
+    else {
+      setGuestData(prev => ({
+        ...prev,
+        deliveryAddress: data.formatted_address || ""
+      }));
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -463,7 +463,17 @@ export default function Cart() {
                               Delivery Address
                             </label>
                             <div className="relative">
-                              <Location setAddObj={setAddObj} />
+                              {/* <Location setAddObj={setAddObj} /> */}
+                              <Input
+                                id="deliveryAddress"
+                                name="deliveryAddress"
+                                type={"text"}
+                                value={formData.deliveryAddress}
+                                onChange={handleInputChange}
+                                required
+                                className="w-full pr-12"
+                                placeholder="2204 Belleword park drive, Califonia,USA"
+                              />
 
                             </div>
                           </div>
@@ -537,7 +547,17 @@ export default function Cart() {
                                     Delivery Address
                                   </label>
                                   <div className="relative">
-                                    <AddressAutocomplete onSelect={handleAddressSelect} />
+                                    {/* <Location onSelect={handleAddressSelect} /> */}
+                                    <Input
+                                      id="deliveryAddress"
+                                      name="deliveryAddress"
+                                      type={"text"}
+                                      value={guestData.deliveryAddress}
+                                      onChange={handleInputChangeGuest}
+                                      required
+                                      className="w-full pr-12"
+                                      placeholder="2204 Belleword park drive, Califonia,USA"
+                                    />
 
                                   </div>
                                 </div>

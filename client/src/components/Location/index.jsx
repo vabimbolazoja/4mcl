@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const GOOGLE_API_KEY = "AIzaSyARhWcvd5RCPL2IOekI2NCLGIuA5AflZNo";
 
@@ -92,9 +93,9 @@ export default function AddressAutocomplete({ onSelect }) {
 
   return (
     <div>
-      <input
+      <Input
         ref={inputRef}
-        placeholder="Enter your address"
+        placeholder="5224 Belleword Park Drive, Califonia"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
         style={{ width: "100%", padding: "8px", fontSize: "1rem" }}

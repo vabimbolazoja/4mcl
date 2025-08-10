@@ -51,19 +51,11 @@ export default function Login() {
           }
           else {
             setIsLoading(false)
-            toast({
-              title: "Gues Payment ",
-              description: 'Payment Verification Failed',
-              variant: "destructive",
-            });
+            
           }
         } catch (err: any) {
             setIsLoading(false)
-          toast({
-            title: "Gues Payment ",
-            description: 'Payment Verification Failed',
-            variant: "destructive",
-          });
+          
         }
       }
 
