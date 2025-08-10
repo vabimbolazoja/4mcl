@@ -8,19 +8,22 @@ import { useToast } from "@/hooks/use-toast";
 import Logo from "../../attached_assets/logoSvg.svg"
 import authService from "../services/auth-service"
 import Cookie from 'js-cookie'
+import { Modal } from 'antd'
 export default function Register() {
   const [formData, setFormData] = useState({
     email: '',
-    firstName:'',
-    lastName:'',
-    phoneNumber:'',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [isLoadingResend,setIsLoadingResend] = useState(false)
   const { toast } = useToast();
 
   const passwordRequirements = [
@@ -78,22 +81,19 @@ export default function Register() {
       const result = await authService.register(data);
       if (result) {
         setIsLoading(false)
-        if(result?.status === 201){
-          toast({
-            title: "Registration failed",
-            description: `Registration Successful,. A confirmation link has been sent to your registered email address -${formData?.email}, Clikc the activation link to activate your account`,
-          });
+        if (result?.status === 201) {
+          setOpenSuccessModal(true)
         }
       }
-      else{
+      else {
         toast({
-          title: "Login failed",
+          title: "Registration failed",
           description: result?.message,
           variant: "destructive",
         });
       }
-      }
-     catch (err:any) {
+    }
+    catch (err: any) {
       setIsLoading(false)
       toast({
         title: "Registration failed",
@@ -102,6 +102,35 @@ export default function Register() {
       });
     }
   };
+
+  const resendVerify = async () => {
+    setIsLoadingResend(true);
+    try {
+      const result = await authService.resendMailVerify({email:formData?.email});
+      if (result) {
+        setIsLoadingResend(false)
+        toast({
+          title: "Resend Verification Mail",
+          description: result?.message,
+        });
+      }
+      else{
+        setIsLoadingResend(false)
+        toast({
+          title: "Resend Verification Mail",
+          description: result?.message,
+          variant: "destructive",
+        });
+      }
+    } catch (err:any) {
+      setIsLoadingResend(false)
+      toast({
+        title: "Resend Verification Mail",
+        description: err?.response?.data?.message,
+        variant: "destructive",
+      });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-emerald-50 flex items-center justify-center p-4">
@@ -120,7 +149,7 @@ export default function Register() {
             <CardTitle className="text-2xl font-bold text-slate-900 mb-2">Create Your Account</CardTitle>
             <p className="text-slate-600">Join thousands of satisfied customers</p>
           </CardHeader>
-          
+
           <CardContent className="pt-0">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -184,7 +213,7 @@ export default function Register() {
                   placeholder="Enter your phone number"
                 />
               </div>
-              
+
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
                   Password
@@ -208,7 +237,7 @@ export default function Register() {
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                
+
                 {/* Password Requirements */}
                 {formData.password && (
                   <div className="mt-3 space-y-2">
@@ -221,7 +250,7 @@ export default function Register() {
                   </div>
                 )}
               </div>
-              
+
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
                   Confirm Password
@@ -249,7 +278,7 @@ export default function Register() {
                   <p className="mt-2 text-sm text-red-600">Passwords do not match</p>
                 )}
               </div>
-              
+
               <div className="flex items-start">
                 <input
                   type="checkbox"
@@ -265,7 +294,7 @@ export default function Register() {
                   <Link href="/privacy" className="text-primary-600 hover:text-primary-700">Privacy Policy</Link>
                 </label>
               </div>
-              
+
               <Button
                 type="submit"
                 disabled={isLoading || !agreedToTerms}
@@ -274,7 +303,7 @@ export default function Register() {
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
-            
+
             <div className="mt-6 text-center">
               <p className="text-slate-600">
                 Already have an account?{' '}
@@ -283,10 +312,32 @@ export default function Register() {
                 </Link>
               </p>
             </div>
-            
-          
+
+
           </CardContent>
         </Card>
+
+        <Modal
+          title="Registration Successful!"
+          closable={{ 'aria-label': 'Custom Close Button' }}
+          open={openSuccessModal}
+          footer={false}
+          onCancel={() => setOpenSuccessModal(false)}
+        >
+          <p className="p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg">
+            <strong>🎉 Registration successful!</strong> We’ve sent a verification link to your email address.
+            Please check your inbox (and spam folder) and follow the instruction to complete your registration.
+          </p>
+          <br />
+          <Button
+            type="submit"
+            disabled={isLoadingResend}
+            onClick={resendVerify}
+            className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+          >
+           {isLoadingResend ? 'Sending..' : 'Resend Verification Mail'}
+          </Button>
+        </Modal>
       </div>
     </div>
   );

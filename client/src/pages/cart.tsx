@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -47,20 +47,12 @@ export default function Cart() {
     0
   );
 
-  const handleAddressSelect = (data) => {
-    if (sessionStorage?.getItem('4mttoken')) {
-      setFormData(prev => ({
-        ...prev,
-        deliveryAddress: data.formatted_address || ""
-      }));
-    }
-    else {
-      setGuestData(prev => ({
-        ...prev,
-        deliveryAddress: data.formatted_address || ""
-      }));
-    }
-  }
+
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -132,7 +124,28 @@ export default function Cart() {
     );
   }
 
+  const validateForm = (phone:any, address:any) => {
+    // Phone: only digits, optional "+" at start, 7–15 digits
+    const phoneRegex = /^\+?[0-9]{7,15}$/;
+  
+    // Address: at least 10 characters (letters, numbers, spaces, commas, dots)
+    const addressRegex = /^[a-zA-Z0-9\s,.'-]{10,}$/;
+  
+    let errors = {};
+  
+    if (!phoneRegex.test(phone)) {
+      errors.phone = "Please enter a valid phone number (7–15 digits, optional +).";
+    }
+  
+    if (!addressRegex.test(address)) {
+      errors.address = "Please enter a valid delivery address (at least 10 characters).";
+    }
+  
+    return errors;
+  };
+
   const handleSubmitGuest = (e) => {
+  
     e.preventDefault()
     if (radioValue === 1) {
       setGuestForm(true)
@@ -154,6 +167,22 @@ export default function Cart() {
 
   const handleGuestPay = async (e) => {
     e.preventDefault();
+    const errors = validateForm(guestData.phone, guestData.deliveryAddress);
+
+    if (Object.keys(errors).length > 0) {
+      // Show error messages (could be toast, alert, or setting state)
+      if (errors.phone) toast({
+        title: "Checkout",
+        description: errors?.phone,
+        variant: "destructive",
+      });;
+      if (errors.address) toast({
+        title: "Checkout",
+        description: errors?.address,
+        variant: "destructive",
+      });;
+      return; // stop submission
+    }
     setIsLoading(true);
     const deliveryInfo = {
       name: guestData?.fullName,
@@ -212,6 +241,22 @@ export default function Cart() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors = validateForm(formData.phone, formData.deliveryAddress);
+
+    if (Object.keys(errors).length > 0) {
+      // Show error messages (could be toast, alert, or setting state)
+      if (errors.phone) toast({
+        title: "Checkout",
+        description: errors?.phone,
+        variant: "destructive",
+      });;
+      if (errors.address) toast({
+        title: "Checkout",
+        description: errors?.address,
+        variant: "destructive",
+      });;
+      return; // stop submission
+    }
     setIsLoading(true);
     const deliveryInfo = {
       name: formData?.fullName,

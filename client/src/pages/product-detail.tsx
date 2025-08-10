@@ -102,6 +102,11 @@ export default function ProductDetail() {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+
+  useEffect(() => {
     setIsAdding(false)
   }, [quantity])
 
@@ -149,13 +154,13 @@ export default function ProductDetail() {
           <div className="flex items-center space-x-2 text-sm text-slate-600 mb-8">
             <Link href="/" className="hover:text-emerald-600">Home</Link>
             <span>/</span>
-            <Link href="/#categories" className="hover:text-emerald-600">{product.category?.name}</Link>
+            <Link href={`/products-category?category=${product?.category?._id}&category_type=${product?.category?.name}`} className="hover:text-emerald-600">{product.category?.name}</Link>
             <span>/</span>
             <span className="text-slate-900">{product.name}</span>
           </div>
 
           {/* Back Button */}
-          <Link href="/">
+          <Link href="/products">
             <Button variant="ghost" className="mb-6 text-slate-600 hover:text-emerald-600">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Products

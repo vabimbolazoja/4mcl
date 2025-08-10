@@ -1,6 +1,4 @@
-// context/CartContext.tsx
-
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import { CartItem } from '../types/cart';
 
 type CartState = {
@@ -12,7 +10,8 @@ type CartAction =
   | { type: 'REMOVE_ITEM'; payload: string }
   | { type: 'INCREMENT_ITEM'; payload: string }
   | { type: 'DECREMENT_ITEM'; payload: string }
-  | { type: 'CLEAR_CART' };
+  | { type: 'CLEAR_CART' }
+  | { type: 'SET_CART'; payload: CartItem[] };
 
 const CartContext = createContext<{
   state: CartState;
@@ -79,6 +78,9 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
     case 'CLEAR_CART':
       return { items: [] };
 
+    case 'SET_CART':
+      return { items: action.payload };
+
     default:
       return state;
   }
@@ -86,6 +88,19 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(cartReducer, { items: [] });
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      dispatch({ type: 'SET_CART', payload: JSON.parse(storedCart) });
+    }
+  }, []);
+
+  // Save to localStorage whenever cart changes
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(state.items));
+  }, [state.items]);
 
   const addItem = (item: CartItem) => dispatch({ type: 'ADD_ITEM', payload: item });
   const removeItem = (id: string) => dispatch({ type: 'REMOVE_ITEM', payload: id });

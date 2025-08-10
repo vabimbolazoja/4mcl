@@ -41,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       addItem(newProd)
       toast({
         title: "Add to Cart!",
-        description: `${product?.name} is now added to your cart.`,
+        description: `${product?.name} of the minum order quanity ${product?.moq} is now added to your cart.`,
 
       });
     }
