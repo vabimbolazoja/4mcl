@@ -3,23 +3,17 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  root: path.resolve(__dirname, "client"),  // client folder where index.html lives
+  root: path.resolve(__dirname, "client"),
+  base: "/", // Important for correct asset paths in production
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client/src"),  // @ for imports inside client/src
-      "@shared": path.resolve(__dirname, "shared"),  // if you have shared folder at root
-      "@assets": path.resolve(__dirname, "attached_assets"),  // your assets folder at root
+      "@": path.resolve(__dirname, "client/src"),
+      // add other aliases if needed
     },
   },
   build: {
-    outDir: path.resolve(__dirname, "dist"),  // build output at root/dist
-    emptyOutDir: true,  // clean dist folder before build
-  },
-  server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
+    outDir: path.resolve(__dirname, "dist"),
+    emptyOutDir: true,
   },
 });
