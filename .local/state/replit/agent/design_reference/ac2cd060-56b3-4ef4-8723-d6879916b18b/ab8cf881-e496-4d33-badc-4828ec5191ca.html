@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfriMarket - Authentic African Foods for the Diaspora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#16A34A',
+                        secondary: '#F59E0B',
+                        accent: '#EA580C',
+                        warm: '#FEF3C7',
+                        cultural: '#92400E'
+                    },
+                    fontFamily: {
+                        'heading': ['Inter', 'sans-serif'],
+                        'body': ['system-ui', '-apple-system', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-body">
+    <!-- @COMPONENT: NavigationHeader -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="bg-primary text-white rounded-lg px-3 py-2 font-heading font-bold text-xl">
+                        AfriMarket
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-lg mx-8 hidden md:block">
+                    <div class="relative">
+                        <input type="text" placeholder="Search for authentic African foods..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Navigation Icons -->
+                <div class="flex items-center space-x-6">
+                    <div class="hidden md:flex items-center space-x-4">
+                        <select class="bg-transparent border border-gray-300 rounded px-3 py-1 text-sm">
+                            <option>USD</option>
+                            <option>NGN</option>
+                        </select>
+                    </div>
+                    <button class="relative p-2 text-gray-600 hover:text-primary">
+                        <i class="fas fa-heart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </button>
+                    <button class="relative p-2 text-gray-600 hover:text-primary">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                    </button>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                        Login
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Search -->
+        <div class="md:hidden px-4 pb-4">
+            <div class="relative">
+                <input type="text" placeholder="Search African foods..." 
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: NavigationHeader -->
+
+    <!-- @COMPONENT: CategoryNavigation -->
+    <nav class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-8 overflow-x-auto">
+                    <a href="#" class="text-primary font-medium whitespace-nowrap">All Categories</a>
+                    <a href="#" class="text-gray-600 hover:text-primary whitespace-nowrap">Grains & Cereals</a>
+                    <a href="#" class="text-gray-600 hover:text-primary whitespace-nowrap">Tubers & Roots</a>
+                    <a href="#" class="text-gray-600 hover:text-primary whitespace-nowrap">Oils & Fats</a>
+                    <a href="#" class="text-gray-600 hover:text-primary whitespace-nowrap">Spices & Seasonings</a>
+                    <a href="#" class="text-gray-600 hover:text-primary whitespace-nowrap">Dried Foods</a>
+                    <a href="#" class="text-gray-600 hover:text-primary whitespace-nowrap">Beverages</a>
+                </div>
+                <div class="hidden lg:flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">Free shipping on orders over $50</span>
+                    <i class="fas fa-shipping-fast text-primary"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: CategoryNavigation -->
+
+    <!-- @COMPONENT: HeroSection -->
+    <section class="bg-gradient-to-r from-primary to-green-600 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-heading font-bold mb-6">
+                        Authentic African Foods Delivered to Your Door
+                    </h1>
+                    <p class="text-xl mb-8 text-green-100">
+                        Connect with your roots through premium quality African foods sourced directly from local farmers. 
+                        Serving the diaspora with taste, tradition, and trust.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-white text-primary px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                            Shop Now
+                        </button>
+                        <button class="border border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-primary transition-colors">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <!-- A vibrant display of various African foods including rice, yam, and colorful spices in traditional containers -->
+                    <img src="https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" 
+                         alt="Traditional African foods and ingredients" 
+                         class="rounded-2xl shadow-2xl w-full h-auto">
+                    <div class="absolute -bottom-6 -right-6 bg-secondary text-white p-4 rounded-xl shadow-lg">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">2000+</div>
+                            <div class="text-sm">Happy Customers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: TrustIndicators -->
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shipping-fast text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold mb-2">Fast Shipping</h3>
+                    <p class="text-gray-600 text-sm">Free shipping on orders over $50 worldwide</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-certificate text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold mb-2">Quality Certified</h3>
+                    <p class="text-gray-600 text-sm">All products tested for authenticity and quality</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-globe text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold mb-2">Global Delivery</h3>
+                    <p class="text-gray-600 text-sm">Serving African diaspora communities worldwide</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-heart text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="font-heading font-semibold mb-2">Made with Love</h3>
+                    <p class="text-gray-600 text-sm">Connecting you to home through authentic flavors</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: TrustIndicators -->
+
+    <!-- @COMPONENT: FeaturedProducts -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">Featured Products</h2>
+                <p class="text-gray-600 text-lg">Discover our most popular authentic African foods</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- @MAP: featuredProducts.map(product => ( -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative">
+                        <!-- Premium Nigerian long grain rice in traditional packaging -->
+                        <img src="https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" 
+                             alt="Premium Nigerian Rice" 
+                             class="w-full h-48 object-cover">
+                        <div class="absolute top-3 left-3 bg-primary text-white px-2 py-1 rounded-full text-xs font-medium">
+                            Bestseller
+                        </div>
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2">
+                            <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors cursor-pointer"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Nigeria</span>
+                            <div class="flex items-center">
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="text-sm text-gray-600 ml-1">(124)</span>
+                            </div>
+                        </div>
+                        <h3 class="font-heading font-semibold text-lg mb-2">Premium Nigerian Rice</h3>
+                        <p class="text-gray-600 text-sm mb-3">Long grain, locally sourced, perfect for jollof rice and other traditional dishes</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="text-sm text-gray-500">
+                                <span>Weight: 5kg</span> • <span>MOQ: 1 bag</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl font-bold text-primary">$24.99</span>
+                                <span class="text-sm text-gray-500">₦18,500</span>
+                            </div>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative">
+                        <!-- Fresh African yam tubers displayed in traditional basket -->
+                        <img src="https://pixabay.com/get/g494f344081cbeb389e606e031fca8f45fd49f5cd2f260f06eb829e83f155eedb6865444e91b4719ff382095f1b2505798f9f94e396e0154ae714bde52d75fb84_1280.jpg" 
+                             alt="Fresh African Yam" 
+                             class="w-full h-48 object-cover">
+                        <div class="absolute top-3 left-3 bg-secondary text-white px-2 py-1 rounded-full text-xs font-medium">
+                            Fresh
+                        </div>
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2">
+                            <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors cursor-pointer"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Ghana</span>
+                            <div class="flex items-center">
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="text-sm text-gray-600 ml-1">(89)</span>
+                            </div>
+                        </div>
+                        <h3 class="font-heading font-semibold text-lg mb-2">Premium African Yam</h3>
+                        <p class="text-gray-600 text-sm mb-3">Fresh, high-quality yam tubers perfect for pounded yam and other traditional recipes</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="text-sm text-gray-500">
+                                <span>Weight: 3kg</span> • <span>MOQ: 1 piece</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl font-bold text-primary">$18.99</span>
+                                <span class="text-sm text-gray-500">₦14,000</span>
+                            </div>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative">
+                        <!-- Assorted African spices and seasonings in traditional containers -->
+                        <img src="https://pixabay.com/get/g7021e4d93ed2d00b83e4a61aab909e2281c35d5570361121d88dd6f3574b97156c44eb42e8b8974611b7acf05d4d9c91973f8a9c8fc9a44bc925e986eff4fa80_1280.jpg" 
+                             alt="African Spice Mix" 
+                             class="w-full h-48 object-cover">
+                        <div class="absolute top-3 left-3 bg-accent text-white px-2 py-1 rounded-full text-xs font-medium">
+                            Authentic
+                        </div>
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2">
+                            <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors cursor-pointer"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Nigeria</span>
+                            <div class="flex items-center">
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="text-sm text-gray-600 ml-1">(156)</span>
+                            </div>
+                        </div>
+                        <h3 class="font-heading font-semibold text-lg mb-2">African Spice Mix</h3>
+                        <p class="text-gray-600 text-sm mb-3">Authentic blend of traditional spices for seasoning meat, fish, and vegetables</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="text-sm text-gray-500">
+                                <span>Weight: 200g</span> • <span>MOQ: 1 pack</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl font-bold text-primary">$12.99</span>
+                                <span class="text-sm text-gray-500">₦9,500</span>
+                            </div>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <div class="relative">
+                        <!-- Golden palm oil in traditional container -->
+                        <img src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" 
+                             alt="Premium Palm Oil" 
+                             class="w-full h-48 object-cover">
+                        <div class="absolute top-3 left-3 bg-primary text-white px-2 py-1 rounded-full text-xs font-medium">
+                            Premium
+                        </div>
+                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2">
+                            <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors cursor-pointer"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Nigeria</span>
+                            <div class="flex items-center">
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="text-sm text-gray-600 ml-1">(203)</span>
+                            </div>
+                        </div>
+                        <h3 class="font-heading font-semibold text-lg mb-2">Premium Palm Oil</h3>
+                        <p class="text-gray-600 text-sm mb-3">Pure, unrefined palm oil essential for authentic African cooking</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="text-sm text-gray-500">
+                                <span>Volume: 1L</span> • <span>MOQ: 1 bottle</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl font-bold text-primary">$16.99</span>
+                                <span class="text-sm text-gray-500">₦12,500</span>
+                            </div>
+                            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+
+            <div class="text-center mt-12">
+                <button class="bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-green-600 transition-colors">
+                    View All Products
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: FeaturedProducts -->
+
+    <!-- @COMPONENT: CategoryShowcase -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">Shop by Category</h2>
+                <p class="text-gray-600 text-lg">Explore our wide range of authentic African food categories</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <!-- Various African grains including rice, millet, and sorghum -->
+                    <img src="https://pixabay.com/get/gb3a912fc03ca0cf46dfba09868097e000c11fd85813698bcf6fd130b6651adff299ccdc41a5f430b352a087b1bc63d38ea1a926cc51f9a46e880c954b611b273_1280.jpg" 
+                         alt="African Grains and Cereals" 
+                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <h3 class="text-2xl font-heading font-bold mb-2">Grains & Cereals</h3>
+                        <p class="text-gray-200 mb-3">Rice, millet, sorghum, and more staples</p>
+                        <span class="text-sm bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">50+ Products</span>
+                    </div>
+                </div>
+
+                <div class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <!-- Fresh African yam and cassava tubers -->
+                    <img src="https://pixabay.com/get/gdc08877b95ff4e325e5c5b3c395ca77d7f537d8ee7f36c65596a78dc819b54e9d8e3367560e4520c98fa9193200e2d206681d1f72418936aa11030a2d54717f7_1280.jpg" 
+                         alt="African Tubers and Roots" 
+                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <h3 class="text-2xl font-heading font-bold mb-2">Tubers & Roots</h3>
+                        <p class="text-gray-200 mb-3">Yam, cassava, plantain, and sweet potato</p>
+                        <span class="text-sm bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">25+ Products</span>
+                    </div>
+                </div>
+
+                <div class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <!-- Colorful African spices and seasonings in bowls -->
+                    <img src="https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400" 
+                         alt="African Spices and Seasonings" 
+                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <h3 class="text-2xl font-heading font-bold mb-2">Spices & Seasonings</h3>
+                        <p class="text-gray-200 mb-3">Authentic blends and traditional flavors</p>
+                        <span class="text-sm bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">40+ Products</span>
+                    </div>
+                </div>
+
+                <div class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <!-- African palm oil and other cooking oils -->
+                    <img src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400" 
+                         alt="African Oils and Fats" 
+                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <h3 class="text-2xl font-heading font-bold mb-2">Oils & Fats</h3>
+                        <p class="text-gray-200 mb-3">Palm oil, shea butter, and cooking oils</p>
+                        <span class="text-sm bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">15+ Products</span>
+                    </div>
+                </div>
+
+                <div class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <!-- African dried fish and preserved foods -->
+                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400" 
+                         alt="African Dried Foods" 
+                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <h3 class="text-2xl font-heading font-bold mb-2">Dried Foods</h3>
+                        <p class="text-gray-200 mb-3">Dried fish, meat, and preserved foods</p>
+                        <span class="text-sm bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">30+ Products</span>
+                    </div>
+                </div>
+
+                <div class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <!-- African traditional beverages and drinks -->
+                    <img src="https://images.unsplash.com/photo-1544145945-f90425340c7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=400" 
+                         alt="African Beverages" 
+                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <h3 class="text-2xl font-heading font-bold mb-2">Beverages</h3>
+                        <p class="text-gray-200 mb-3">Traditional drinks and herbal teas</p>
+                        <span class="text-sm bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">20+ Products</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: CategoryShowcase -->
+
+    <!-- @COMPONENT: TestimonialsSection -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">What Our Customers Say</h2>
+                <p class="text-gray-600 text-lg">Trusted by thousands of diaspora families worldwide</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"Finally found authentic Nigerian rice that tastes just like home! The quality is exceptional and delivery was faster than expected. My family is so happy!"</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                            AO
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-semibold">Adunni Okafor</div>
+                            <div class="text-sm text-gray-600">London, UK</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"The palm oil is premium quality and the packaging kept it fresh during shipping. Customer service was also very helpful with my order questions."</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                            KA
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-semibold">Kwame Asante</div>
+                            <div class="text-sm text-gray-600">Toronto, Canada</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"Amazing selection of African spices! The traditional blend I ordered was perfect for my suya preparation. Will definitely order again!"</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                            FI
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-semibold">Fatima Ibrahim</div>
+                            <div class="text-sm text-gray-600">New York, USA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: TestimonialsSection -->
+
+    <!-- @COMPONENT: NewsletterSection -->
+    <section class="py-16 bg-primary text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">Stay Connected to Your Roots</h2>
+                <p class="text-xl text-green-100 mb-8">Get exclusive deals, recipe ideas, and updates on new African products</p>
+                <div class="max-w-md mx-auto">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input type="email" placeholder="Enter your email address" 
+                               class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white">
+                        <button class="bg-white text-primary px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                            Subscribe
+                        </button>
+                    </div>
+                    <p class="text-sm text-green-100 mt-3">Join 5,000+ diaspora families staying connected to authentic African flavors</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: NewsletterSection -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="bg-primary text-white rounded-lg px-3 py-2 font-heading font-bold text-xl mb-6 inline-block">
+                        AfriMarket
+                    </div>
+                    <p class="text-gray-300 mb-6">Connecting African diaspora communities worldwide through authentic, quality African foods delivered to your door.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-heading font-semibold text-lg mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white">All Products</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Grains & Cereals</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Tubers & Roots</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Spices & Seasonings</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Oils & Fats</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Dried Foods</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-heading font-semibold text-lg mb-6">Customer Care</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Track Your Order</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Returns & Refunds</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Shipping Info</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">FAQs</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-heading font-semibold text-lg mb-6">Contact Info</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-primary mr-3"></i>
+                            <span class="text-gray-300">support@afrimarket.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-primary mr-3"></i>
+                            <span class="text-gray-300">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock text-primary mr-3"></i>
+                            <span class="text-gray-300">Mon-Fri: 9AM-6PM EST</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-shield-alt text-primary mr-3"></i>
+                            <span class="text-gray-300">Secure Shopping</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <p class="text-gray-400 text-sm">© 2024 AfriMarket. All rights reserved.</p>
+                    <div class="flex space-x-6 mt-4 md:mt-0">
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Terms of Service</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <!-- @COMPONENT: MobileCartButton -->
+    <div class="fixed bottom-4 right-4 md:hidden">
+        <button class="bg-primary text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-colors">
+            <i class="fas fa-shopping-cart text-xl"></i>
+            <span class="absolute -top-2 -right-2 bg-accent text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">2</span>
+        </button>
+    </div>
+    <!-- @END_COMPONENT: MobileCartButton -->
+
+    <script>
+        // TODO: Implement cart functionality, user authentication, and payment processing
+        (function() {
+            // Simple mobile menu toggle (for demonstration)
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Simple cart counter update (for demonstration)
+            const cartButtons = document.querySelectorAll('button:contains("Add to Cart")');
+            const cartCounters = document.querySelectorAll('.cart-counter');
+            
+            // TODO: Implement real cart functionality with state management
+            // TODO: Add product filtering and search functionality
+            // TODO: Implement user authentication and profile management
+            // TODO: Add payment processing with Paystack/Stripe integration
+            // TODO: Implement order tracking and management
+        })();
+    </script>
+</body>
+</html>
