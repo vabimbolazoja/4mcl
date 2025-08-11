@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react"; 'react'
+import { useContext,useEffect } from "react"; 'react'
 import { Button } from "@/components/ui/button";
 import ProductCard from "./product-card";
 import { Skeleton } from "@/components/ui/skeleton";
