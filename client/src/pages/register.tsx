@@ -39,6 +39,21 @@ export default function Register() {
     }));
   };
 
+  const validateForm = (phone:any) => {
+    // Phone: only digits, optional "+" at start, 7–15 digits
+    const phoneRegex = /^\+?[0-9]{7,15}$/;
+
+    let errors = {};
+  
+    if (!phoneRegex.test(phone)) {
+      errors.phone = "Please enter a valid phone number (7–15 digits, optional +).";
+    }
+  
+   
+  
+    return errors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -69,6 +84,17 @@ export default function Register() {
       return;
     }
 
+    const errors = validateForm(formData.phoneNumber);
+
+    if (Object.keys(errors).length > 0) {
+      // Show error messages (could be toast, alert, or setting state)
+      if (errors.phone) toast({
+        title: "Checkout",
+        description: errors?.phone,
+        variant: "destructive",
+      });
+      return; // stop submission
+    }
     setIsLoading(true);
     const data = {
       phoneNumber: formData?.phoneNumber,
@@ -326,7 +352,7 @@ export default function Register() {
         >
           <p className="p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg">
             <strong>🎉 Registration successful!</strong> We’ve sent a verification link to your email address.
-            Please check your inbox (and spam folder) and follow the instruction to complete your registration.
+            Please check your inbox at {formData?.email} (and spam folder) and follow the instruction to complete your registration.
           </p>
           <br />
           <Button

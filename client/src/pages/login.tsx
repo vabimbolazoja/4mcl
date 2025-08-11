@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import Logo from "../../attached_assets/logoSvg.svg"
 import authService from "../services/auth-service"
 import { useLocation } from "wouter";
-
+import { Modal } from 'antd'
 export default function Login() {
   const [formData, setFormData] = useState({
     email: '',
@@ -17,8 +17,10 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [openFailedLogin, setOpenFailed] = useState(false)
+  const [loginFailedMsg, setLoginFailedMsg] = useState("")
   const [location, setLocation] = useLocation();
-  const [isResending,setIsLoadingResend] =  useState(false)
+  const [isResending, setIsLoadingResend] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -43,18 +45,17 @@ export default function Login() {
         sessionStorage.setItem('4mttoken', token)
         sessionStorage.setItem('4mtfname', result?.firstName + " " + result?.lastName)
         sessionStorage.setItem('username', result?.firstName)
-        sessionStorage?.setItem('4mtxxd',result?.user._id)
-        sessionStorage.setItem('4mtxxm',result.user.email)
-
+        sessionStorage?.setItem('4mtxxd', result?.user._id)
+        sessionStorage.setItem('4mtxxm', result.user.email)
         toast({
           title: "Login Successful",
           description: result?.message,
         });
         setTimeout(() => {
           setLocation('/')
-        },1400)
+        }, 1400)
       }
-      else{
+      else {
         setIsLoading(false)
         toast({
           title: "Login failed",
@@ -62,28 +63,36 @@ export default function Login() {
           variant: "destructive",
         });
       }
-    } catch (err:any) {
+    } catch (err: any) {
       setIsLoading(false)
-      toast({
-        title: "Login failed",
-        description: err?.response?.data?.message,
-        variant: "destructive",
-      });
+      if (err?.response?.status === 403) {
+        setLoginFailedMsg(err?.response?.data?.message)
+        setOpenFailed(true)
+      }
+      else {
+        setOpenFailed(false)
+        toast({
+          title: "Login failed",
+          description: err?.response?.data?.message,
+          variant: "destructive",
+        });
+      }
     }
   };
 
   const resendVerify = async () => {
     setIsLoadingResend(true);
     try {
-      const result = await authService.resendMailVerify({email:formData?.email});
+      const result = await authService.resendMailVerify({ email: formData?.email });
       if (result) {
         setIsLoadingResend(false)
+        setOpenFailed(false)
         toast({
           title: "Resend Verification Mail",
           description: result?.message,
         });
       }
-      else{
+      else {
         setIsLoadingResend(false)
         toast({
           title: "Resend Verification Mail",
@@ -91,7 +100,7 @@ export default function Login() {
           variant: "destructive",
         });
       }
-    } catch (err:any) {
+    } catch (err: any) {
       setIsLoadingResend(false)
       toast({
         title: "Resend Verification Mail",
@@ -101,7 +110,7 @@ export default function Login() {
     }
   }
 
-  
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-emerald-50 flex items-center justify-center p-4">
@@ -166,9 +175,9 @@ export default function Login() {
 
               <div className="flex items-center justify-between">
                 {formData?.email &&
-                <div className="" onClick={resendVerify}>
-                  <span className=" text-sm text-primary-600 hover:text-primary-700">{isResending ? "Sending" : "Resend Verification Mail?"}</span>
-                </div>}
+                  <div className="" onClick={resendVerify}>
+                    <span className=" text-sm text-primary-600 hover:text-primary-700">{isResending ? "Sending" : "Resend Verification Mail?"}</span>
+                  </div>}
                 <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700">
                   Forgot password?
                 </Link>
@@ -202,6 +211,26 @@ export default function Login() {
           <Link href="/privacy" className="text-primary-600 hover:text-primary-700">Privacy Policy</Link>
         </p>
       </div>
+      <Modal
+        title="Login Failed!"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={openFailedLogin}
+        footer={false}
+        onCancel={() => setOpenFailed(false)}
+      >
+        <p className="p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
+          {loginFailedMsg}
+        </p>
+        <br />
+        <Button
+          type="submit"
+          disabled={isResending}
+          onClick={resendVerify}
+          className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+        >
+          {isResending ? 'Sending..' : 'Resend Verification Mail'}
+        </Button>
+      </Modal>
     </div>
   );
 }
