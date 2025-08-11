@@ -20,6 +20,10 @@ export default function FeaturedProducts() {
     retry: 1,
     
   });
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
 
 
   return (
