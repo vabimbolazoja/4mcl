@@ -19,7 +19,7 @@ interface ProductCardProps {
   };
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, origin }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const { addItem, incrementItem, decrementItem, removeItem, state } = useCart();
   const { toast } = useToast();
@@ -28,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = async () => {
     setIsAdding(true);
     const cartItem = state.items.find(item => item._id === product._id);
-    if(cartItem?._id){
+    if (cartItem?._id) {
       toast({
         title: "Add to Cart!",
         description: `${product?.name} is already in your cart.`,
@@ -36,8 +36,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       });
     }
-    else{
-      const newProd = { ...product, quantity: product?.moq}
+    else {
+      const newProd = { ...product, quantity: product?.moq }
       addItem(newProd)
       toast({
         title: "Add to Cart!",
@@ -45,18 +45,18 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       });
     }
-    }
+  }
 
-    
-  
+
+
 
   return (
     <Card className="group hover:shadow-xl hover:shadow-emerald-100 transition-all duration-300 hover:border-emerald-200 cursor-pointer">
       <CardContent className="p-0">
         <Link href={`/product/${product._id}`}>
           <div className="overflow-hidden rounded-t-lg">
-            <img 
-              src={product.imageUrls[0]} 
+            <img
+              src={product.imageUrls[0]}
               alt={product.name}
               className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
             />
@@ -76,15 +76,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <Link href={`/product/${product._id}`}>
             <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2 leading-tight hover:text-emerald-700 transition-colors">{product.name}</h3>
-            
+
           </Link>
           <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">MOQ:{product.moq}</p>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center space-x-2">
-              <span className="text-base sm:text-lg font-bold text-slate-900">${product.priceUsd}</span>
-              <span className="text-base sm:text-lg font-bold text-slate-900">₦{product.priceNaira}</span>
+              <span className="text-base sm:text-lg font-bold text-slate-900">{origin === '0' ? "$" : "N"}{origin === "0" ? product.priceUsd : origin === "1" ?  product?.priceNaira : 'NA'}</span>
             </div>
-            <Button 
+            <Button
               onClick={handleAddToCart}
               disabled={isAdding}
               className="bg-emerald-600 text-white hover:bg-emerald-700 text-xs sm:text-sm px-4 py-2 w-full sm:w-auto shadow-lg"

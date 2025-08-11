@@ -17,6 +17,7 @@ export default function Login() {
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [processorStatus,setProcessorStatus] = useState("")
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
     const [location, setLocation] = useLocation();
@@ -37,7 +38,7 @@ export default function Login() {
         const id = urlParams.get("order_id");
         const ref = urlParams.get("reference");
         if (id && ref) {
-            verifyPayment(id,ref)
+            verifyPayment(id, ref)
 
         }
 
@@ -45,19 +46,35 @@ export default function Login() {
 
     const verifyPayment = async (id: any, ref: any) => {
         try {
-          const result = await paymentService.verify({ ref: ref, id: id });
-          if (result) {
-            setIsLoading(false)
-          }
-          else {
-            setIsLoading(false)
-            
-          }
+            const result = await paymentService.verify({ ref: ref, id: id });
+            if (result) {
+                localStorage.clear();
+                setIsLoading(false)
+                setProcessorStatus(result?.paystack?.data?.status)
+                toast({
+                    title: "Order Verification",
+                    description: 'Payment Verification Successful',
+                });
+            }
+            else {
+                setIsLoading(false)
+                toast({
+                    title: "Order Verification",
+                    description: result?.message,
+                    variant: "destructive",
+                });
+
+            }
         } catch (err: any) {
+            toast({
+                title: "Order Verification",
+                description: err?.response?.data?.message,
+                variant: "destructive",
+            });
             setIsLoading(false)
-          
+
         }
-      }
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary-50 to-emerald-50 flex items-center justify-center p-4">
@@ -73,12 +90,12 @@ export default function Login() {
 
                 <Card className="shadow-xl border-0">
                     <CardHeader className="text-center pb-4">
-                        <CardTitle className="text-2xl font-bold text-slate-900 mb-2">Welcome Back</CardTitle>
-                        <p className="text-slate-600">Your order payment has been completed</p>
+                        <CardTitle className="text-2xl font-bold text-slate-900 mb-2">Welcome Back </CardTitle>
+                        <p className="text-slate-600">{processorStatus === 'success' ? 'Your order payment has been completed, Our team will reach out to you and process your delivery to provided address' : 'Your order payment has been submitted'}</p>
                     </CardHeader>
 
                     <CardContent className="pt-0">
-                        <form  className="space-y-6">
+                        <form className="space-y-6">
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <div className="animate__animated  animate__pulse">
                                     <div style={{ display: 'flex', justifyContent: 'center' }}>

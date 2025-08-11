@@ -108,18 +108,19 @@ export default function OrderHistory() {
       const result = await paymentService.verify({ ref: ref, id: id });
       if (result) {
         refetch()
+        localStorage.clear();
       }
       else {
         toast({
           title: "Order Verification",
-          description: 'Payment Verification Failed',
+          description: result?.message,
           variant: "destructive",
         });
       }
     } catch (err: any) {
       toast({
         title: "Order Verification",
-        description: 'Payment Verification Failed',
+        description: err?.response?.data?.message,
         variant: "destructive",
       });
     }

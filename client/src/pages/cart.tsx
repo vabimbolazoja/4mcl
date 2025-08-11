@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "wouter";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import Location from "../components/Location/index"
 import paymentService from "../services/payment-service"
+import {GlobalStateContext} from "../context/globalContext"
 import { Radio } from 'antd'
 export default function Cart() {
   // Sample cart items for demonstration
@@ -18,6 +19,7 @@ export default function Cart() {
   const [openPaymentDetails, setOpenPaymentDetails] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [guestForm, setGuestForm] = useState(false)
+  const { origin, setOrigin } = useContext(GlobalStateContext);
   const [location, setLocation] = useLocation();
   const [addObj, setAddObj] = useState({})
   const { toast } = useToast();
@@ -86,17 +88,11 @@ export default function Cart() {
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
-      const price = currency === 'USD' ? parseFloat(item.priceUsd) : parseFloat(item.priceNaira);
+      const price = origin?.sourceOrigin === "0"  ? parseFloat(item.priceUsd) : parseFloat(item.priceNaira);
       return total + (price * item.quantity);
     }, 0);
   };
 
-  const formatPrice = (priceUsd: string, priceNgn: string) => {
-    if (currency === 'USD') {
-      return `$${priceUsd}`;
-    }
-    return `₦${priceNgn}`;
-  };
 
   if (cartItems.length === 0) {
     return (
@@ -111,7 +107,7 @@ export default function Cart() {
               Looks like you haven't added any authentic African foods to your cart yet.
               Start exploring our amazing selection!
             </p>
-            <Link href="/">
+            <Link href="/products">
               <Button className="bg-emerald-600 text-white hover:bg-emerald-700 px-8 py-3 shadow-lg">
                 Continue Shopping
               </Button>
@@ -194,8 +190,8 @@ export default function Cart() {
     const data = {
       deliveryInfo: deliveryInfo,
       user_id: '6895cd9fb97e7a9fe487d6e1',
-      user_email: 'olisa57@mailinator.com',
-      currency: currency,
+      user_email: guestData?.email,
+      currency: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
       orders: cartItems?.map((d) => ({
         prod_id: d?._id,
         prod_name: d?.name,
@@ -203,10 +199,10 @@ export default function Cart() {
         image: d?.imageUrls[0],
         price: currency === 'USD' ? d?.priceUsd : d?.priceNaira,
         qty: d?.quantity,
-        subtotal: d?.quantity * (currency === 'USD' ? d?.priceUsd : d?.priceNaira),
+        subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : d?.priceNaira),
       })),
       totalAmt: calculateTotal(),
-      paymentType: currency
+      paymentType: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
     }
     try {
       const result = await paymentService.initiate(data);
@@ -269,7 +265,7 @@ export default function Cart() {
       deliveryInfo: deliveryInfo,
       user_id: sessionStorage?.getItem('4mtxxd'),
       user_email: sessionStorage?.getItem('4mtxxm'),
-      currency: currency,
+      currency: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
       orders: cartItems?.map((d) => ({
         prod_id: d?._id,
         prod_name: d?.name,
@@ -277,10 +273,10 @@ export default function Cart() {
         image: d?.imageUrls[0],
         price: currency === 'USD' ? d?.priceUsd : d?.priceNaira,
         qty: d?.quantity,
-        subtotal: d?.quantity * (currency === 'USD' ? d?.priceUsd : d?.priceNaira),
+        subtotal: d?.quantity * (origin?.sourceOrigin ===  '0' ? d?.priceUsd : d?.priceNaira),
       })),
       totalAmt: calculateTotal(),
-      paymentType: currency
+      paymentType: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
     }
     try {
       const result = await paymentService.initiate(data);
@@ -313,6 +309,9 @@ export default function Cart() {
     }
   };
 
+  console?.log(cartItems)
+
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -320,8 +319,8 @@ export default function Cart() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Shopping Cart</h1>
-          <p className="text-slate-600">Review your items and proceed to checkout</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Shopping Cart </h1>
+          <p className="text-slate-600">Review your items and proceed to checkout </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -340,14 +339,26 @@ export default function Cart() {
                         />
                         <div className="flex-1">
                           <h3 className="font-semibold text-slate-900 text-sm sm:text-base">{item.name}</h3>
+                          {origin?.sourceOrigin !== "" &&
                           <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
-                            {formatPrice(item.priceUsd, item.priceNaira)}
+                            {origin?.sourceOrigin === "1" ? '₦' : '$'}{origin?.sourceOrigin === "1" ? item?.priceNaira : item.priceUsd} each
+                          </p>}
+                          <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
+                            MOQ: {item?.moq}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-center space-x-2">
-
+                        {item?.moq  <  item.quantity &&
+                      <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateQuantityDecrease(item._id)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>}
                         <span className="mx-3 font-medium w-8 text-center">{item.quantity}</span>
                         <Button
                           variant="outline"
@@ -361,7 +372,7 @@ export default function Cart() {
 
                       <div className="flex items-center justify-between sm:justify-end">
                         <p className="font-bold text-slate-900">
-                          {currency === 'USD'
+                          {origin?.sourceOrigin === "0"
                             ? `$${(parseFloat(item.priceUsd) * item.quantity).toFixed(2)}`
                             : `₦${(parseFloat(item.priceNaira) * item.quantity).toLocaleString()}`
                           }
@@ -389,20 +400,18 @@ export default function Cart() {
                 <h2 className="text-xl font-bold text-slate-900 mb-4">Order Summary</h2>
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Currency</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Payment Currency</label>
                   <div className="flex space-x-2">
                     <Button
-                      variant={currency === 'USD' ? 'default' : 'outline'}
+                      variant={origin?.sourceOrigin === '0' ? 'default' : 'outline'}
                       size="sm"
-                      onClick={() => setCurrency('USD')}
                       className="flex-1"
                     >
                       USD ($)
                     </Button>
                     <Button
-                      variant={currency === 'NGN' ? 'default' : 'outline'}
+                      variant={origin?.sourceOrigin === "1" ? 'default' : 'outline'}
                       size="sm"
-                      onClick={() => setCurrency('NGN')}
                       className="flex-1"
                     >
                       NGN (₦)
@@ -414,7 +423,7 @@ export default function Cart() {
                   <div className="flex justify-between">
                     <span className="text-slate-600">Subtotal</span>
                     <span className="font-medium">
-                      {currency === 'USD'
+                      {origin?.sourceOrigin === "0"
                         ? `$${calculateTotal().toFixed(2)}`
                         : `₦${calculateTotal().toLocaleString()}`
                       }
@@ -428,7 +437,7 @@ export default function Cart() {
                     <div className="flex justify-between">
                       <span className="text-lg font-bold text-slate-900">Total</span>
                       <span className="text-lg font-bold text-slate-900">
-                        {currency === 'USD'
+                        {origin?.sourceOrigin === "0" 
                           ? `$${calculateTotal().toFixed(2)}`
                           : `₦${calculateTotal().toLocaleString()}`
                         }
@@ -654,7 +663,7 @@ export default function Cart() {
                     </DialogContent>
                   </Dialog>
                   <br />
-                  <Link href="/" className={"mt-5"}>
+                  <Link href="/products" className={"mt-5"}>
                     <Button variant="outline" className="w-full" style={{ marginTop: '1rem' }}>
                       Continue Shopping
                     </Button>

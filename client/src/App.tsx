@@ -11,6 +11,7 @@ import Support from "@/pages/support";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import Cart from "@/pages/cart";
+import { GlobalStateProvider } from "./context/shoppingContext";
 import ProductDetail from "@/pages/product-detail";
 import OrderHistory from "@/pages/order-history";
 import NotFound from "@/pages/not-found";
@@ -113,10 +114,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+      <GlobalStateProvider>
         <CartProvider>
           <Toaster />
           <Router />
         </CartProvider>
+        </GlobalStateProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

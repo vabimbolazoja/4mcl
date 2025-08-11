@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useRoute } from "wouter";
 import { Link } from "wouter";
 import Header from "@/components/header";
@@ -12,6 +12,7 @@ import axios from "axios";
 import { Star, Heart, Share2, ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ThreeDots } from "react-loader-spinner";
+import {GlobalStateContext} from "../context/globalContext"
 import config from "../../src/config"
 import { cartItems } from "@shared/schema";
 interface Product {
@@ -34,6 +35,7 @@ interface Product {
 export default function ProductDetail() {
   const [, params] = useRoute("/product/:id");
   const [selectedImage, setSelectedImage] = useState(0);
+  const { origin, setOrigin } = useContext(GlobalStateContext);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -231,26 +233,9 @@ export default function ProductDetail() {
               </div>
 
               <div className="mb-6">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Button
-                    variant={currency === 'USD' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCurrency('USD')}
-                    className="text-xs"
-                  >
-                    USD
-                  </Button>
-                  <Button
-                    variant={currency === 'NGN' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setCurrency('NGN')}
-                    className="text-xs"
-                  >
-                    NGN
-                  </Button>
-                </div>
+               
                 <div className="text-3xl font-bold text-slate-900">
-                  {currency === 'USD' ? `$${product.priceUsd}` : `₦${product.priceNaira}`}
+                  {origin?.sourceOrigin === '0' ? `$${product.priceUsd}` : origin?.sourceOrigin === '1' ? `₦${product.priceNaira}` : "NA"}
                 </div>
                 <p className="text-slate-600 mt-1"> MOQ: {product.moq}</p>
               </div>

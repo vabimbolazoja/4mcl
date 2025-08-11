@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useContext } from "react"; 'react'
 import { Button } from "@/components/ui/button";
 import ProductCard from "./product-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,7 +8,9 @@ import config from "../config"
 import axios from "axios";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { Empty } from "antd";
+import {GlobalStateContext} from "../context/globalContext"
 export default function FeaturedProducts() {
+  const { origin, setOrigin } = useContext(GlobalStateContext);
   const { data: products, isLoading, error } = useQuery({
     queryKey: [`${config.baseurl}products`],
     queryFn: () =>
@@ -15,6 +18,7 @@ export default function FeaturedProducts() {
         .get(`${config.baseurl}products`)
         .then((res) => res.data),
     retry: 1,
+    
   });
 
 
@@ -48,7 +52,7 @@ export default function FeaturedProducts() {
           ) : (
          
               products?.products?.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} origin={origin.sourceOrigin} />
               )) 
           )}
         </div>
