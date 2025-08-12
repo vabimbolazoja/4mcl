@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { useContext } from "react";
 import ProductCard from "./product-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from 'wouter'
@@ -7,8 +8,9 @@ import config from "../config"
 import { Empty } from "antd";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import axios from 'axios'
+import {GlobalStateContext} from "../context/globalContext"
 export default function FeaturedProducts() {
-
+    const { origin, setOrigin } = useContext(GlobalStateContext);
     const url = new URL(window.location.href);
     const category = url.searchParams.get("category");
     const categoryName = url.searchParams.get("category_type");
@@ -19,7 +21,7 @@ export default function FeaturedProducts() {
         refetchOnWindowFocus: false,
         queryFn: () =>
             axios
-                .get(`${config.baseurl}productCategory?categoryId=${category}&page=1&limit=100`)
+                .get(`${config.baseurl}productCategory-active?categoryId=${category}&page=1&limit=100`)
                 .then((res) => res.data),
     });
 
@@ -52,7 +54,7 @@ export default function FeaturedProducts() {
                         ))
                     ) :
                         products?.products?.map((product) => (
-                            <ProductCard key={product.id} product={product} />
+                            <ProductCard key={product.id} product={product} origin={origin.sourceOrigin} />
                         ))
                     }
                 </div>

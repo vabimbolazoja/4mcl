@@ -12,10 +12,10 @@ import {GlobalStateContext} from "../context/globalContext"
 export default function FeaturedProducts() {
   const { origin, setOrigin } = useContext(GlobalStateContext);
   const { data: products, isLoading, error } = useQuery({
-    queryKey: [`${config.baseurl}products`],
+    queryKey: [`${config.baseurl}products-active`],
     queryFn: () =>
       axios
-        .get(`${config.baseurl}products`)
+        .get(`${config.baseurl}products-active`)
         .then((res) => res.data),
     retry: 1,
     
