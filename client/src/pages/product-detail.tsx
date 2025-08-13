@@ -262,7 +262,6 @@ export default function ProductDetail() {
                   </div>}
                 {product?.stock < 1 ?
                   <Button
-                    onClick={handleAddToCart}
                     className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 py-3"
                     style={{ background: 'red', border: '1px solid red', color: 'white' }}
                   >
