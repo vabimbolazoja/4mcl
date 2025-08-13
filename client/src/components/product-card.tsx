@@ -84,7 +84,7 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
               <span className="text-base sm:text-lg font-bold text-slate-900">{origin === '0' ? "$" : "N"}{origin === "0" ? product.priceUsd : origin === "1" ? product?.priceNaira : 'NA'}</span>
             </div>
             {product?.stock < 1 ?
-              <div style={{ border: '1px solid red', background: 'red', padding: '8px', borderRadius: '10px' }}>
+              <div style={{ border: '1px solid red', background: 'red', padding: '8px',color:'white', borderRadius: '10px' }}>
                 Sold Out
               </div> :
               <Button

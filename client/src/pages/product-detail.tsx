@@ -12,7 +12,7 @@ import axios from "axios";
 import { Star, Heart, Share2, ShoppingCart, ArrowLeft, Truck, Shield, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ThreeDots } from "react-loader-spinner";
-import {GlobalStateContext} from "../context/globalContext"
+import { GlobalStateContext } from "../context/globalContext"
 import config from "../../src/config"
 import { cartItems } from "@shared/schema";
 interface Product {
@@ -201,7 +201,7 @@ export default function ProductDetail() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <Badge variant="secondary" className="bg-emerald-100 text-emerald-700">
-                  {product.category?.name} 
+                  {product.category?.name}
                 </Badge>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -233,7 +233,7 @@ export default function ProductDetail() {
               </div>
 
               <div className="mb-6">
-               
+
                 <div className="text-3xl font-bold text-slate-900">
                   {origin?.sourceOrigin === '0' ? `$${product.priceUsd}` : origin?.sourceOrigin === '1' ? `₦${product.priceNaira}` : "NA"}
                 </div>
@@ -244,28 +244,38 @@ export default function ProductDetail() {
 
               {/* Quantity and Add to Cart */}
               <div className="flex items-center space-x-4 mb-8">
-                <div className="flex items-center border border-slate-200 rounded-lg">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-2 text-slate-600 hover:text-emerald-600"
+                {product?.stock > 0 &&
+                  <div className="flex items-center border border-slate-200 rounded-lg">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="px-3 py-2 text-slate-600 hover:text-emerald-600"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 py-2 font-medium">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="px-3 py-2 text-slate-600 hover:text-emerald-600"
+                    >
+                      +
+                    </button>
+                  </div>}
+                {product?.stock < 1 ?
+                  <Button
+                    onClick={handleAddToCart}
+                    className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 py-3"
+                    style={{ background: 'red', border: '1px solid red', color: 'white' }}
                   >
-                    -
-                  </button>
-                  <span className="px-4 py-2 font-medium">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-2 text-slate-600 hover:text-emerald-600"
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Sold Out
+                  </Button> :
+                  <Button
+                    onClick={handleAddToCart}
+                    className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 py-3"
                   >
-                    +
-                  </button>
-                </div>
-                <Button
-                  onClick={handleAddToCart}
-                  className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 py-3"
-                >
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                 {product?.stock < 1 ? "Sold Out" : "Add to Cart"}
-                </Button>
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Add to Cart
+                  </Button>}
               </div>
 
               {/* Features */}
