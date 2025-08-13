@@ -264,7 +264,7 @@ export default function ProductDetail() {
                   className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 py-3"
                 >
                   <ShoppingCart className="h-5 w-5 mr-2" />
-                  Add to Cart
+                 {product?.stock < 1 ? "Sold Out" : "Add to Cart"}
                 </Button>
               </div>
 

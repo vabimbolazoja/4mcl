@@ -81,15 +81,19 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
           <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">MOQ:{product.moq}</p>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center space-x-2">
-              <span className="text-base sm:text-lg font-bold text-slate-900">{origin === '0' ? "$" : "N"}{origin === "0" ? product.priceUsd : origin === "1" ?  product?.priceNaira : 'NA'}</span>
+              <span className="text-base sm:text-lg font-bold text-slate-900">{origin === '0' ? "$" : "N"}{origin === "0" ? product.priceUsd : origin === "1" ? product?.priceNaira : 'NA'}</span>
             </div>
-            <Button
-              onClick={handleAddToCart}
-              disabled={isAdding}
-              className="bg-emerald-600 text-white hover:bg-emerald-700 text-xs sm:text-sm px-4 py-2 w-full sm:w-auto shadow-lg"
-            >
-              {isAdding ? 'Added!' : 'Add to Cart'}
-            </Button>
+            {product?.stock < 1 ?
+              <div style={{ border: '1px solid red', background: 'red', padding: '8px', borderRadius: '10px' }}>
+                Sold Out
+              </div> :
+              <Button
+                onClick={handleAddToCart}
+                disabled={isAdding}
+                className="bg-emerald-600 text-white hover:bg-emerald-700 text-xs sm:text-sm px-4 py-2 w-full sm:w-auto shadow-lg"
+              >
+                {isAdding ? 'Added!' : 'Add to Cart'}
+              </Button>}
           </div>
         </div>
       </CardContent>

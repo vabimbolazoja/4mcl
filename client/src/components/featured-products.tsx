@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useContext,useEffect } from "react"; 'react'
+import { useContext, useEffect } from "react"; 'react'
 import { Button } from "@/components/ui/button";
 import ProductCard from "./product-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,7 +8,7 @@ import config from "../config"
 import axios from "axios";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { Empty } from "antd";
-import {GlobalStateContext} from "../context/globalContext"
+import { GlobalStateContext } from "../context/globalContext"
 export default function FeaturedProducts() {
   const { origin, setOrigin } = useContext(GlobalStateContext);
   const { data: products, isLoading, error } = useQuery({
@@ -18,7 +18,7 @@ export default function FeaturedProducts() {
         .get(`${config.baseurl}products-active`)
         .then((res) => res.data),
     retry: 1,
-    
+
   });
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -54,18 +54,18 @@ export default function FeaturedProducts() {
               </div>
             ))
           ) : (
-         
-              products?.products?.map((product) => (
-                <ProductCard key={product.id} product={product} origin={origin.sourceOrigin} />
-              )) 
+
+            products?.products?.map((product) => (
+              <ProductCard key={product.id} product={product} origin={origin.sourceOrigin} />
+            ))
           )}
         </div>
 
         {products?.products?.length === 0 &&
-                    <div className="text-center mb-12 sm:mb-16">
-                        <ShoppingBag className="mx-auto h-24 w-24 text-slate-300 mb-6" />
-                        <h4 className="">Products Not Found</h4>
-                    </div>}
+          <div className="text-center mb-12 sm:mb-16">
+            <ShoppingBag className="mx-auto h-24 w-24 text-slate-300 mb-6" />
+            <h4 className="">Products Not Found</h4>
+          </div>}
       </div>
     </section>
   );
