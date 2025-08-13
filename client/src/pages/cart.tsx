@@ -360,6 +360,7 @@ export default function Cart() {
                           <Minus className="h-4 w-4" />
                         </Button>}
                         <span className="mx-3 font-medium w-8 text-center">{item.quantity}</span>
+                        {item?.quantity <= item?.stock &&
                         <Button
                           variant="outline"
                           size="sm"
@@ -367,7 +368,7 @@ export default function Cart() {
                           className="h-8 w-8 p-0"
                         >
                           <Plus className="h-4 w-4" />
-                        </Button>
+                        </Button>}
                       </div>
 
                       <div className="flex items-center justify-between sm:justify-end">
