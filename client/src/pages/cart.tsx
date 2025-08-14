@@ -360,7 +360,7 @@ export default function Cart() {
                           <Minus className="h-4 w-4" />
                         </Button>}
                         <span className="mx-3 font-medium w-8 text-center">{item.quantity}</span>
-                        {item?.quantity <= item?.stock &&
+                        {item?.quantity < item?.stock &&
                         <Button
                           variant="outline"
                           size="sm"
