@@ -45,11 +45,13 @@ export default function Login() {
     }, [])
 
     const verifyPayment = async (id: any, ref: any) => {
+
         try {
             const result = await paymentService.verify({ ref: ref, id: id });
             if (result) {
-                localStorage.clear();
                 setIsLoading(false)
+                localStorage.clear();
+                localStorage.removeItem("cart");
                 setProcessorStatus(result?.paystack?.data?.status)
                 toast({
                     title: "Order Verification",

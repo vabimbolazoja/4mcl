@@ -2,9 +2,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useCart } from '../context/cartContext';
 import { useToast } from "@/hooks/use-toast";
+import { Modal } from "antd";
 interface ProductCardProps {
   product: {
     id: number;
@@ -21,6 +22,9 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, origin }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
+  const [openCartMsg, setOpenCartMsg] = useState(false)
+  const [location, setLocation] = useLocation();
+  const [cartMsg, setCartMsg] = useState("")
   const { addItem, incrementItem, decrementItem, removeItem, state } = useCart();
   const { toast } = useToast();
 
@@ -39,11 +43,8 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
     else {
       const newProd = { ...product, quantity: product?.moq }
       addItem(newProd)
-      toast({
-        title: "Add to Cart!",
-        description: `${product?.name} of the minum order quanity ${product?.moq} is now added to your cart.`,
-
-      });
+      setOpenCartMsg(true)
+      setCartMsg(`${product?.name} of the minum order quanity ${product?.moq} is now added to your cart.`)
     }
   }
 
@@ -84,7 +85,7 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
               <span className="text-base sm:text-lg font-bold text-slate-900">{origin === '0' ? "$" : "N"}{origin === "0" ? product.priceUsd : origin === "1" ? product?.priceNaira : 'NA'}</span>
             </div>
             {product?.stock < 1 ?
-              <div style={{ border: '1px solid red', background: 'red', padding: '8px',color:'white', borderRadius: '10px' }}>
+              <div style={{ border: '1px solid red', background: 'red', padding: '8px', color: 'white', borderRadius: '10px' }}>
                 Sold Out
               </div> :
               <Button
@@ -97,6 +98,35 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
           </div>
         </div>
       </CardContent>
+      <Modal
+        title="Add to Cart!"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={openCartMsg}
+        footer={false}
+        onCancel={() => setOpenCartMsg(false)}
+      >
+        <p className="p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg">
+          {cartMsg}
+        </p>
+        <br />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Button
+            type="submit"
+            onClick={() => setOpenCartMsg(false)}
+            className="w bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+          >
+            Continue Shopping
+          </Button>
+          <Button
+            type="submit"
+            onClick={() => setLocation('/cart')
+            }
+            className="w bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+          >
+            Checkout
+          </Button>
+        </div>
+      </Modal>
     </Card>
   );
 }

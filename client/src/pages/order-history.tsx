@@ -11,6 +11,7 @@ import { Package, Calendar, CreditCard, Truck, Eye, MapPin, Phone, Mail, X } fro
 import { useQuery } from "@tanstack/react-query";
 import config from "../../src/config"
 import paymentService from "../services/payment-service"
+import { Modal } from 'antd'
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios'
 interface OrderItem {
@@ -43,6 +44,7 @@ interface Order {
 export default function OrderHistory() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
+  const [openReturn, setOpenReturn] = useState(false)
   const { data: orders, isLoading, refetch, error } = useQuery({
     queryKey: [`${config.baseurl}orders/customer/${sessionStorage?.getItem('4mtxxd')}`],
     queryFn: () =>
@@ -109,6 +111,7 @@ export default function OrderHistory() {
       if (result) {
         refetch()
         localStorage.clear();
+        localStorage.removeItem("cart");
       }
       else {
         toast({
@@ -198,6 +201,34 @@ export default function OrderHistory() {
                               </div>
                             </Badge>
                           </p>
+                          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                            {order?.orderStatus === 'DELIVERED' &&
+                              <Button
+                                type="submit"
+                                onClick={() => setOpenReturn(true)}
+                                className="mt-2 bg-red-600 text-white hover:bg-red-700 py-1 font-semibold shadow-lg"
+                              >
+                                Return Item
+                              </Button>}
+                            {order?.orderStatus === 'DELIVERED' &&
+                              <Button
+                                type="submit"
+                                style={{marginLeft:'1rem'}}
+                                onClick={() => {
+                                  toast({
+                                    title: "Add to Cart!",
+                                    description: `Coming soon!`,
+                                    variant: "destructive",
+
+                                  });
+                                }}
+                                className="mt-2 bg-blue-600 text-white hover:bg-blue-700 py-1 font-semibold shadow-lg"
+                              >
+                                Review Order
+                              </Button>}
+
+                          </div>
+
                         </div>
                         <Badge className={`${getStatusColor(order.orderStatus)} w-fit`}>
                           <div className="flex items-center">
@@ -411,6 +442,27 @@ export default function OrderHistory() {
             ))}
           </div>
         )}
+
+        <Modal
+          title="Return Promot!"
+          closable={{ 'aria-label': 'Custom Close Button' }}
+          open={openReturn}
+          footer={false}
+          onCancel={() => setOpenReturn(false)}
+        >
+          <p className="p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
+            We are sorry to learn that you may not be satisfied,Thank you for your request. Please contact us at support@4marketdays.com and our team will get in touch with you shortly."
+
+          </p>
+          <br />
+          <Button
+            type="submit"
+            onClick={() => setOpenReturn(false)}
+            className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+          >
+            DONE
+          </Button>
+        </Modal>
 
         {/* Pagination could go here */}
         {orders.orders?.length > 0 && (
