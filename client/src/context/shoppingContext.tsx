@@ -15,6 +15,7 @@ interface GlobalStateProviderProps {
 export const GlobalStateProvider: React.FC<GlobalStateProviderProps> = ({ children }) => {
   const [origin, setOrigin] = useState<OriginState>({
     sourceOrigin: "",
+    trackOrders:[]
   });
 
   return (

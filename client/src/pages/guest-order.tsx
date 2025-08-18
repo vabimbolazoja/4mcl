@@ -17,7 +17,8 @@ export default function Login() {
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
-    const [processorStatus,setProcessorStatus] = useState("")
+    const [processorStatus, setProcessorStatus] = useState("")
+    const [orderRef, setOrderRef] = useState("")
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
     const [location, setLocation] = useLocation();
@@ -37,7 +38,9 @@ export default function Login() {
         var urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get("order_id");
         const ref = urlParams.get("reference");
+        const orderref = urlParams.get("order_ref");
         if (id && ref) {
+            setOrderRef(orderref)
             verifyPayment(id, ref)
 
         }
@@ -94,6 +97,8 @@ export default function Login() {
                     <CardHeader className="text-center pb-4">
                         <CardTitle className="text-2xl font-bold text-slate-900 mb-2">Welcome Back </CardTitle>
                         <p className="text-slate-600">{processorStatus === 'success' ? 'Your order payment has been completed, Our team will reach out to you and process your delivery to provided address' : 'Your order payment has been submitted'}</p>
+                        {processorStatus === 'success' &&
+                            <p style={{fontWeight:'700'}}>YOUR TRACKING ORDER REF is : <br />{orderRef}</p>}
                     </CardHeader>
 
                     <CardContent className="pt-0">

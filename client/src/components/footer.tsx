@@ -1,16 +1,64 @@
 import { Sprout } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Logo from "../../attached_assets/logoSvg.svg"
 import { Link, useLocation, useSearch } from "wouter";
 import { Modal } from "antd";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { GlobalStateContext } from "../context/globalContext";
+import trackService from "../services/track-order"
 export default function Footer() {
   const [openModal, setOpenModal] = useState(false)
+  const [trackOrderOpen, setOpenTrackOrder] = useState(false)
+  const [order_ref, setOrderRef] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [location,setLocation] = useLocation()
+  const { toast } = useToast();
+  const { origin, setOrigin } = useContext(GlobalStateContext);
+
 
   const trackOrder = () => {
     setOpenModal(true)
   }
+
+  const onTrakc = async (e: any) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      const result = await trackService.trackOrder(order_ref);
+      if (result) {
+        console.log(result)
+        setIsLoading(false)
+        setOrderRef("")
+        setOrigin((prevState) => ({
+          ...prevState,
+          trackOrders: result
+        }));
+        setTimeout(() => {
+          setLocation('/track-order')
+        },500)
+        setOpenModal(false)
+      }
+      else {
+        setIsLoading(false)
+        toast({
+          title: "Login failed",
+          description: result?.message,
+          variant: "destructive",
+        });
+      }
+    } catch (err: any) {
+      setIsLoading(false)
+      toast({
+        title: "Login failed",
+        description: err?.response?.data?.message,
+        variant: "destructive",
+      });
+    }
+  }
+
+
   return (
     <footer className="bg-slate-900 text-white py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -101,10 +149,11 @@ export default function Footer() {
             Order Reference
           </label>
           <Input
-            id="email"
-            name="email"
-            type="email"
-
+            id="text"
+            name="text"
+            type="text"
+            value={order_ref}
+            onChange={(e) => setOrderRef(e?.target?.value)}
             required
             className="w-full"
             placeholder="Input your order reference number"
@@ -113,11 +162,15 @@ export default function Footer() {
         <br />
         <Button
           type="submit"
+          onClick={onTrakc}
+          disabled={isLoading}
           className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
         >
-          Submit
+          {isLoading ? "Tracking..." : 'Track'}
         </Button>
       </Modal>
+
+  
     </footer>
   );
 }
