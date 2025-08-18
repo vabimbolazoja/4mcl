@@ -42,6 +42,7 @@ export default function Footer() {
       }
       else {
         setIsLoading(false)
+        setOpenModal(false)
         toast({
           title: "Login failed",
           description: result?.message,
@@ -50,6 +51,7 @@ export default function Footer() {
       }
     } catch (err: any) {
       setIsLoading(false)
+      setOpenModal(false)
       toast({
         title: "Login failed",
         description: err?.response?.data?.message,

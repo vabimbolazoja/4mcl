@@ -111,7 +111,6 @@ export default function OrderHistory() {
       if (result) {
         refetch()
         localStorage.clear();
-        localStorage.removeItem("cart");
       }
       else {
         toast({
