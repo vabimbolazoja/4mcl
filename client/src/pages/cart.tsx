@@ -261,6 +261,10 @@ export default function Cart() {
       if (result) {
         setIsLoading(false)
         setPaymentPage(true)
+        setTimeout(() => {
+          window.location.href = result.paystack.data?.authorization_url;
+
+        }, 1400)
 
       }
       else {
@@ -325,8 +329,9 @@ export default function Cart() {
         setIsLoading(false)
         setPaymentPage(true)
         setTimeout(() => {
+          window.location.href = result.paystack.data?.authorization_url;
 
-        }, 2000)
+        }, 1400)
 
       }
       else {
