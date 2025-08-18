@@ -1,5 +1,6 @@
 import { Sprout } from "lucide-react";
-
+import Logo from "../../attached_assets/logoSvg.svg"
+import { Link, useLocation } from "wouter";
 export default function Footer() {
   return (
     <footer className="bg-slate-900 text-white py-12 sm:py-16">
@@ -8,8 +9,13 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center mb-4 sm:mb-6">
-              <Sprout className="text-primary-400 h-6 w-6 sm:h-8 sm:w-8 mr-2" />
-              <span className="text-xl sm:text-2xl font-bold">4marketdays</span>
+              <span className="text-xl sm:text-2xl font-bold">
+              <Link href="/" className="flex-shrink-0 flex items-center">
+              <span className="text-xl sm:text-2xl font-bold text-slate-900">
+                <img src={Logo} />
+              </span>
+            </Link>
+              </span>
             </div>
             <p className="text-slate-300 mb-4 sm:mb-6 max-w-md text-sm sm:text-base leading-relaxed">
               Connecting diaspora communities with authentic African foods. Quality ingredients, delivered worldwide with love and care.
@@ -46,11 +52,9 @@ export default function Footer() {
           <div>
             <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Quick Links</h3>
             <ul className="space-y-1 sm:space-y-2">
-              <li><a href="#about" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">About Us</a></li>
-              <li><a href="#categories" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">All Products</a></li>
-              <li><a href="#categories" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Categories</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Special Offers</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Recipes</a></li>
+              <li><a href="/about" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">About Us</a></li>
+              <li><a href="/products" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">All Products</a></li>
+              <li><a href="/categories" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Categories</a></li>
             </ul>
           </div>
 
@@ -58,11 +62,8 @@ export default function Footer() {
           <div>
             <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Customer Support</h3>
             <ul className="space-y-1 sm:space-y-2">
-              <li><a href="#contact" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Contact Us</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Shipping Info</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Returns</a></li>
-              <li><a href="#support" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">FAQs</a></li>
-              <li><a href="#" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Track Order</a></li>
+              <li><a href="/contact" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Contact Us</a></li>
+              <li><a href="/about" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">FAQs</a></li>
             </ul>
           </div>
         </div>

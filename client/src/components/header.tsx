@@ -152,6 +152,7 @@ export default function Header() {
                       <a
                         key={item.label}
                         href={item.href}
+                        style={{whiteSpace:'nowrap'}}
                         className="text-slate-700 hover:text-primary-600 font-medium transition-colors py-2"
                         onClick={() => setIsMenuOpen(false)}
                       >
@@ -171,6 +172,7 @@ export default function Header() {
                           <Link
                             key={item.label}
                             href={item.href}
+                            style={{whiteSpace:'nowrap'}}
                             className="text-slate-700 hover:text-primary-600 font-medium transition-colors"
                           >
                             {item.label}
