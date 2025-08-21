@@ -1,29 +1,70 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button";
 import { useContext } from "react";
 import ProductCard from "./product-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from 'wouter'
+import { Pagination } from 'antd'
 import config from "../config"
 import { Empty } from "antd";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import axios from 'axios'
-import {GlobalStateContext} from "../context/globalContext"
+import { GlobalStateContext } from "../context/globalContext"
 export default function FeaturedProducts() {
     const { origin, setOrigin } = useContext(GlobalStateContext);
     const url = new URL(window.location.href);
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(10)
     const category = url.searchParams.get("category");
     const categoryName = url.searchParams.get("category_type");
-    const { data: products, isLoading, error } = useQuery({
+    const { data, isLoading, error,refetch} = useQuery({
         queryKey: ['products', category],
         retry: 1,
         refetchOnMount: true,
         refetchOnWindowFocus: false,
         queryFn: () =>
             axios
-                .get(`${config.baseurl}productCategory-active?categoryId=${category}&page=1&limit=100`)
+                .get(`${config.baseurl}productCategory-active?categoryId=${category}&page=${page}&limit=${limit}`)
                 .then((res) => res.data),
     });
+
+
+    const products = data?.products || [];
+    const totalPages = data?.pages * 10 || 10;
+    const currentPage = data?.page || 1;
+
+
+    useEffect(() => {
+        setPage(currentPage)
+    }, [currentPage])
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [page]);
+
+
+
+    function itemRender(current, type, originalElement) {
+        if (type === "prev") {
+            return <a>Previous</a>;
+        }
+        if (type === "next") {
+            return <a>Next</a>;
+        }
+        return originalElement;
+    }
+
+    const pagination = (page, pageSize) => {
+        setPage(page);
+        setLimit(pageSize)
+
+    };
+
+    useEffect(() => {
+        refetch();
+
+    }, [limit, page]);
 
     return (
         <section className="py-12 sm:py-16 lg:py-20 bg-slate-50" id="products">
@@ -53,18 +94,29 @@ export default function FeaturedProducts() {
                             </div>
                         ))
                     ) :
-                        products?.products?.map((product) => (
+                        products?.map((product) => (
                             <ProductCard key={product.id} product={product} origin={origin.sourceOrigin} />
                         ))
                     }
                 </div>
-                {products?.products?.length === 0 &&
+                {products?.length === 0 && !isLoading &&
                     <div className="text-center mb-12 sm:mb-16">
                         <ShoppingBag className="mx-auto h-24 w-24 text-slate-300 mb-6" />
                         <h4 className="">Products Not Found</h4>
                     </div>}
 
-                
+                <br />
+                {products?.length > 0 && !isLoading &&
+                    <div className="d-flex  justify-content-center align-items-center pt-5 pb-5" style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Pagination
+                            current={page}
+                            total={totalPages}
+                            onChange={pagination}
+                            itemRender={itemRender}
+                        />{" "}
+                    </div>}
+
+
             </div>
         </section>
     );

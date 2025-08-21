@@ -1,28 +1,69 @@
 import { useQuery } from "@tanstack/react-query";
-import { useContext, useEffect } from "react"; 'react'
+import { useContext, useEffect, useState } from "react"; 'react'
 import { Button } from "@/components/ui/button";
 import ProductCard from "./product-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from 'wouter'
+import { Link, useSearch } from 'wouter'
 import config from "../config"
 import axios from "axios";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { Empty } from "antd";
 import { GlobalStateContext } from "../context/globalContext"
+import { Pagination } from "antd";
 export default function FeaturedProducts() {
   const { origin, setOrigin } = useContext(GlobalStateContext);
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: [`${config.baseurl}products-active`],
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: [`${config.baseurl}products-active?page=${page}&limit=${limit}`],
     queryFn: () =>
       axios
-        .get(`${config.baseurl}products-active`)
+        .get(`${config.baseurl}products-active?page=${page}&limit=${limit}`)
         .then((res) => res.data),
     retry: 1,
 
   });
+
+  const products = data?.products || [];
+  const totalPages = data?.pages * 10 || 10;
+  const currentPage = data?.page || 1;
+
+
+  useEffect(() => {
+    setPage(currentPage)
+  },[currentPage])
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [page]);
+
+
+
+  function itemRender(current, type, originalElement) {
+    if (type === "prev") {
+      return <a>Previous</a>;
+    }
+    if (type === "next") {
+      return <a>Next</a>;
+    }
+    return originalElement;
+  }
+
+  const pagination = (page, pageSize) => {
+    setPage(page);
+    setLimit(pageSize)
+
+  };
+
+  useEffect(() => {
+    refetch();
+
+  }, [limit, page]);
 
 
 
@@ -55,17 +96,28 @@ export default function FeaturedProducts() {
             ))
           ) : (
 
-            products?.products?.map((product) => (
+            products?.map((product) => (
               <ProductCard key={product.id} product={product} origin={origin.sourceOrigin} />
             ))
           )}
         </div>
 
-        {products?.products?.length === 0 &&
+        {products?.length === 0 && !isLoading &&
           <div className="text-center mb-12 sm:mb-16">
             <ShoppingBag className="mx-auto h-24 w-24 text-slate-300 mb-6" />
             <h4 className="">Products Not Found</h4>
           </div>}
+
+        <br />
+        {products?.length > 0 && !isLoading &&
+        <div className="d-flex  justify-content-center align-items-center pt-5 pb-5" style={{ display: 'flex', justifyContent: 'center' }}>
+          <Pagination
+            current={page}
+            total={totalPages}
+            onChange={pagination}
+            itemRender={itemRender}
+          />{" "}
+        </div>}
       </div>
     </section>
   );
