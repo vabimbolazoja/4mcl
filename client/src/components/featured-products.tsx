@@ -40,7 +40,7 @@ export default function FeaturedProducts() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [page]);
+  }, []);
 
 
 
