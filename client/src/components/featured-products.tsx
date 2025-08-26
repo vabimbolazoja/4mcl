@@ -24,6 +24,9 @@ export default function FeaturedProducts() {
 
   });
 
+
+
+
   const products = data?.products || [];
   const totalPages = data?.pages * 10 || 10;
   const currentPage = data?.page || 1;

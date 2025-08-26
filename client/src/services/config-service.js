@@ -4,7 +4,7 @@ import { serviceInstance } from "../interceptor/index";
 const configService = {
   getConfigs: (data) =>
     serviceInstance
-      .get(`${config.baseUrl}/api/v1/configurations`, data)
+      .get(`${config.baseUrl}moderations/config`)
       .then(({ data, status }) => ({
         ...data,
         status,

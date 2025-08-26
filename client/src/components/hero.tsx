@@ -32,7 +32,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-6">
               <div className="flex items-center">
                 <Truck className="text-primary-600 h-5 w-5 sm:h-6 sm:w-6 mr-2" />
-                <span className="text-slate-700 font-medium text-sm sm:text-base">Free Shipping $50+</span>
+                <span className="text-slate-700 font-medium text-sm sm:text-base"> Shipping </span>
               </div>
               <div className="flex items-center">
                 <Shield className="text-primary-600 h-5 w-5 sm:h-6 sm:w-6 mr-2" />

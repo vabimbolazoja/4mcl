@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useCart } from '../context/cartContext';
@@ -11,24 +12,31 @@ import { Input } from "@/components/ui/input";
 import config from "../../src/config"
 import { useToast } from "@/hooks/use-toast";
 import paymentService from "../services/payment-service"
+import axios from 'axios'
 import { GlobalStateContext } from "../context/globalContext"
 import { Radio } from 'antd'
+import configService from "../services/config-service"
 export default function Cart() {
-  // Sample cart items for demonstration
+
   const { state, clearCart, incrementItem, decrementItem, removeItem } = useCart();
   const [openPaymentDetails, setOpenPaymentDetails] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [guestForm, setGuestForm] = useState(false)
   const [paymentPage, setPaymentPage] = useState(false)
   const [isValidating, setVerifyingAddress] = useState(false)
+  const [acceptValid, setAcceptValid] = useState(false)
   const [validAddress, setValidAddress] = useState(true)
   const { origin, setOrigin } = useContext(GlobalStateContext);
   const [addressInvalid, setAddressInvalid] = useState(false)
   const [status, setStatus] = useState("")
   const [location, setLocation] = useLocation();
   const [addObj, setAddObj] = useState({})
+  const [deliveryCountry, setDeliveryCountry] = useState("")
   const { toast } = useToast();
   const [radioValue, setRadioValue] = useState(1);
+  const [configData, setConfigData] = useState<any[]>([]);
+
+
   const style = {
     display: 'flex',
     flexDirection: 'column',
@@ -61,8 +69,20 @@ export default function Cart() {
 
 
   useEffect(() => {
+    getConfigs()
     window.scrollTo(0, 0);
   }, []);
+
+  const getConfigs = async () => {
+    try {
+      const result = await configService.getConfigs();
+      const arr = Object.values(result).filter((item) => typeof item === "object");
+      setConfigData(arr)
+
+    } catch (err: any) {
+
+    }
+  }
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +122,25 @@ export default function Cart() {
     }, 0);
   };
 
+  function generateDeliveryFee(): number {
+    if (!cartItems.length || !configData.length || !deliveryCountry) return 0;
+
+    // find the matching config for the deliveryCountry
+    const matchedConfig = configData.find((config) =>
+      config.country.toLowerCase().includes(deliveryCountry.toLowerCase())
+    );
+
+    if (!matchedConfig) return 0;
+
+    const pricePerKg = matchedConfig.deliveryPriceInKg;
+
+    // calculate total delivery fee
+    return cartItems.reduce((total, item) => {
+      return total + item.quantity * pricePerKg;
+    }, 0);
+  }
+
+
 
   if (cartItems.length === 0) {
     return (
@@ -130,17 +169,11 @@ export default function Cart() {
   }
 
   const validateForm = (phone: any, address: any) => {
-    // Phone: only digits, optional "+" at start, 7–15 digits
     const phoneRegex = /^\+?[0-9]{7,15}$/;
-
-
     let errors = {};
-
     if (!phoneRegex.test(phone)) {
       errors.phone = "Please enter a valid phone number (7–15 digits, optional +).";
     }
-
-
     return errors;
   };
 
@@ -164,58 +197,122 @@ export default function Cart() {
     }
   }
 
+  const validateAddressString = (address) => {
+    if (!address || typeof address !== "string") {
+      return { valid: false, message: "Address must be a string", country: null };
+    }
+
+    const lowerAddress = address.toLowerCase();
+
+    // Check for "street"
+    const hasStreet = lowerAddress.includes("street");
+
+    // Check for postal code (at least 4–6 consecutive digits)
+    const postalCodeRegex = /\b\d{4,6}\b/;
+    const hasPostalCode = postalCodeRegex.test(address);
+
+    // Country list (normalize to lowercase for matching)
+    const countries = ["Nigeria", "USA", "Canada", "United States", "UK", "England"];
+
+    // Find actual matched country (case-insensitive)
+    const matchedCountry = countries.find(country =>
+      lowerAddress.includes(country.toLowerCase())
+    );
+
+    // ✅ If no country match at all
+    if (!matchedCountry) {
+      return {
+        valid: false,
+        message: "Address not supported for delivery",
+        country: null
+      };
+    }
+
+    // ✅ If country exists, check rest
+    if (hasStreet && hasPostalCode) {
+      return { valid: true, message: "Valid address", country: matchedCountry };
+    } else {
+      return {
+        valid: false,
+        message: `Invalid address: missing ${[
+          !hasStreet && "street",
+          !hasPostalCode && "postal code"
+        ].filter(Boolean).join(", ")
+          }`,
+        country: matchedCountry
+      };
+    }
+  };
+
+
+
   const proceedPayment = () => {
     setOpenPaymentDetails(true)
   }
 
 
-
-  const validateAddress = async (address: any) => {
-    setAddressInvalid(true);
-    setValidAddress(true);
-    // ✅ More general regex: supports accented letters, Unicode, symbols like / - #
-    const addressRegex = /^(?=.{5,200}$)[\p{L}\p{M}\p{N}\s,.'#\-\/():&]+$/u;
-  
-    if (!addressRegex.test(address)) {
-      setStatus("❌ Please enter a valid address.");
+  const validateAddress = (address: string) => {
+    if (!address) {
+      setStatus("Input valid delivery address");
       setAddressInvalid(true);
+      setValidAddress(true);
       return;
     }
-  
-    setVerifyingAddress(true);
-    setValidAddress(true);
-    try {
-      // Call your backend instead of Nominatim directly
-      const response = await fetch(
-        `${config.baseurl}validate-address?address=${encodeURIComponent(address)}`
-      );
-  
-      const data = await response.json();
-      setVerifyingAddress(false);
-      setValidAddress(true);
 
-  
-      if (!response.ok) {
-        setStatus(`❌ ${data.message || "Address validation failed"}`);
-        setAddressInvalid(true);
-        setValidAddress(true);
-        return;
+    const result = validateAddressString(address);
+    setDeliveryCountry(result.country);
+    setAcceptValid(result.valid);
+    setStatus(result.message);
+    setAddressInvalid(true);
+    setValidAddress(true);
+
+    if (result.valid) {
+      const cont = origin?.sourceOrigin === "1" ? "Nigeria" : "Others";
+
+      if (origin?.sourceOrigin === "1") {
+        if (address.toLowerCase().includes(cont.toLowerCase())) {
+          setStatus(`✅ ${address}`);
+          setValidAddress(false);
+          setAddressInvalid(false);
+        } else {
+          setStatus("Shopping Location does not match provided address");
+          setAddressInvalid(true);
+          setValidAddress(true);
+        }
+      } else {
+        setStatus(`✅ ${address}`);
+        setValidAddress(false);
+        setAddressInvalid(false);
       }
-  
-      // ✅ backend already normalizes the country
-      setStatus(`✅ ${data.message} (Country: ${data.country})`);
-      setValidAddress(false);
-      setAddressInvalid(false);
-  
-    } catch (err) {
-      setVerifyingAddress(false);
-      setValidAddress(true);
-      console.error(err);
-      setStatus("❌ Error validating address. Try again later.");
-      setAddressInvalid(true);
     }
   };
-  
+
+
+  const address = sessionStorage?.getItem('4mttoken') ? formData?.deliveryAddress : guestData?.deliveryAddress;
+  const addressValue = address ? true : false
+
+  useEffect(() => {
+    if (address) {
+    const handler = setTimeout(() => {
+      validateAddress(address);
+    }, 600);
+
+    return () => clearTimeout(handler);
+  }
+  }, [address]);
+
+
+
+  const calculateGrandTotal = (): string => {
+    const productTotal = calculateTotal() || 0;      // make sure this returns a number
+    const deliveryFee = generateDeliveryFee() || 0;  // make sure this returns a number
+
+    const grandTotal = productTotal + deliveryFee;
+
+    return grandTotal
+  };
+
+
 
   const handleGuestPay = async (e) => {
     e.preventDefault();
@@ -239,6 +336,8 @@ export default function Cart() {
       address: guestData?.deliveryAddress ? guestData?.deliveryAddress : "USA",
     }
 
+
+
     const data = {
       deliveryInfo: deliveryInfo,
       user_id: '6895cd9fb97e7a9fe487d6e1',
@@ -253,7 +352,7 @@ export default function Cart() {
         qty: d?.quantity,
         subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : d?.priceNaira),
       })),
-      totalAmt: calculateTotal(),
+      totalAmt: calculateGrandTotal(),
       paymentType: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
     }
     try {
@@ -284,6 +383,21 @@ export default function Cart() {
       });
     }
   }
+  const formatCurrency = (
+    amount: number | string,
+    currency: "USD" | "NGN" | "EUR" | "CAD" = "USD",
+    locale: string = "en-US"
+  ): string => {
+    const value = typeof amount === "string" ? parseFloat(amount) : amount;
+
+    if (isNaN(value)) return "0.00";
+
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -320,7 +434,7 @@ export default function Cart() {
         qty: d?.quantity,
         subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : d?.priceNaira),
       })),
-      totalAmt: calculateTotal(),
+      totalAmt: calculateGrandTotal(),
       paymentType: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
     }
     try {
@@ -352,16 +466,9 @@ export default function Cart() {
     }
   };
 
-  const address = sessionStorage?.getItem('4mttoken') ? formData?.deliveryAddress : guestData?.deliveryAddress;
 
-  useEffect(() => {
-    if (!address) return;
 
-    const handler = setTimeout(() => {
-      validateAddress(address);
-    }, 600);
-    return () => clearTimeout(handler); // cleanup if user keeps typing
-  }, [address]);
+
 
 
   return (
@@ -481,21 +588,7 @@ export default function Cart() {
                       }
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Shipping</span>
-                    <span className="font-medium text-green-600">Free</span>
-                  </div>
-                  <div className="border-t pt-3">
-                    <div className="flex justify-between">
-                      <span className="text-lg font-bold text-slate-900">Total</span>
-                      <span className="text-lg font-bold text-slate-900">
-                        {origin?.sourceOrigin === "0"
-                          ? `$${calculateTotal().toFixed(2)}`
-                          : `₦${calculateTotal().toLocaleString()}`
-                        }
-                      </span>
-                    </div>
-                  </div>
+
                 </div>
 
                 <div className="space-y-3">
@@ -582,8 +675,7 @@ export default function Cart() {
                               className="w-full pr-12"
                               placeholder={origin?.sourceOrigin === "0" ? "2212 Bellewood street Dart,North Carolina, USA" : "100024 Greg coker street,Ikeja, Lagos Nigeria"}
                             />
-                            {isValidating && <div>Verifying Address...</div>}
-                            {status && !isValidating && (
+                            {status && (
                               <p
                                 className={`text-sm ${status.startsWith("✅") ? "text-green-600" : "text-red-600"
                                   }`}
@@ -592,7 +684,26 @@ export default function Cart() {
                               </p>
                             )}
                           </div>
-
+                          {!validAddress && acceptValid &&
+                            <div>
+                              {generateDeliveryFee() !== 0 && (
+                                <div className="flex justify-between">
+                                  <h4 className="">Shipping Fee</h4>
+                                  <h4 className="font-medium text-green-600">
+                                    {formatCurrency(generateDeliveryFee(), origin?.sourceOrigin === '0' ? "USD" : "NGN")}
+                                  </h4>
+                                </div>
+                              )}
+                              {calculateGrandTotal() !== 0 && (
+                                <div className="flex justify-between">
+                                  <h4 className="">Total Payable Amount</h4>
+                                  <h4 className="font-medium text-green-600">
+                                    {formatCurrency(calculateGrandTotal(), origin?.sourceOrigin === '0' ? "USD" : "NGN")}
+                                  </h4>
+                                </div>
+                              )}
+                            </div>
+                          }
                           <Button
                             type="submit"
                             disabled={isLoading || validAddress}
@@ -675,8 +786,7 @@ export default function Cart() {
                                     className="w-full pr-12"
                                     placeholder={origin?.sourceOrigin === "0" ? "2212 Bellewood street Dart,North Carolina, USA" : "100024 Greg coker street,Ikeja, Lagos Nigeria"}
                                   />
-                                  {isValidating && <div>Verifying Address...</div>}
-                                  {status && !isValidating && (
+                                  {status && (
                                     <p
                                       className={`text-sm ${status.startsWith("✅") ? "text-green-600" : "text-red-600"
                                         }`}
@@ -685,6 +795,26 @@ export default function Cart() {
                                     </p>
                                   )}
                                 </div>
+                                {!validAddress && acceptValid &&
+                                  <div>
+                                    {generateDeliveryFee() !== 0 && (
+                                      <div className="flex justify-between">
+                                        <h4 className="">Shipping Fee</h4>
+                                        <h4 className="font-medium text-green-600">
+                                          {formatCurrency(generateDeliveryFee(), origin?.sourceOrigin === '0' ? "USD" : "NGN")}
+                                        </h4>
+                                      </div>
+                                    )}
+                                    {calculateGrandTotal() !== 0 && (
+                                      <div className="flex justify-between">
+                                        <h4 className="">Total Payable Amount</h4>
+                                        <h4 className="font-medium text-green-600">
+                                          {formatCurrency(calculateGrandTotal(), origin?.sourceOrigin === '0' ? "USD" : "NGN")}
+                                        </h4>
+                                      </div>
+                                    )}
+                                  </div>
+                                }
                                 <div>
                                 </div>
                                 <Button
