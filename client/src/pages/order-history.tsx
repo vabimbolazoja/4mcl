@@ -89,6 +89,22 @@ export default function OrderHistory() {
     }
   };
 
+  const formatCurrency = (
+    amount: number | string,
+    currency: "USD" | "NGN" | "EUR" | "CAD" = "USD",
+    locale: string = "en-US"
+  ): string => {
+    const value = typeof amount === "string" ? parseFloat(amount) : amount;
+
+    if (isNaN(value)) return "0.00";
+
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
+
   useEffect(() => {
     var urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get("order_id");
@@ -230,9 +246,10 @@ export default function OrderHistory() {
                           </div>
 
                         </div>
+                        ORDER STATUS:
                         <Badge className={`${getStatusColor(order.orderStatus)} w-fit`}>
                           <div className="flex items-center">
-                            {getStatusIcon(order.orderStatus)}
+                          {getStatusIcon(order.orderStatus)}
                             <span className="ml-1 capitalize">{order.orderStatus}</span>
                           </div>
                         </Badge>
@@ -313,24 +330,25 @@ export default function OrderHistory() {
                                     <div className="flex justify-between">
                                       <span className="text-slate-600">Subtotal</span>
                                       <span className="font-medium">
-                                        {order.paymentType === 'USD' ? '$' : '₦'}{order.totalAmt || order.totalAmt}
+                                        {formatCurrency(order?.totalSub, order.paymentType === 'USD' ? "USD" : "NGN")}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-slate-600">Delivery Cost</span>
+                                      <span className="font-medium">
+                                        {formatCurrency(order?.deliveryCost, order.paymentType === 'USD' ? "USD" : "NGN")}
                                       </span>
                                     </div>
 
                                     <Separator />
                                     <div className="flex justify-between text-lg font-bold">
-                                      <span>Total</span>
-                                      <span>{order.paymentType === 'USD' ? '$' : '₦'}{order.totalAmt}</span>
+                                      <span>Grand Total</span>
+                                      <span>  {formatCurrency(order?.totalAmt, order.paymentType === 'USD' ? "USD" : "NGN")}
+                                      </span>
                                     </div>
                                   </div>
 
-                                  <div className="mt-4">
-                                    <h4 className="font-semibold text-slate-900 mb-2">Payment Method</h4>
-                                    <div className="flex items-center gap-2">
-                                      <CreditCard className="h-4 w-4 text-slate-600" />
-                                      <span className="text-slate-600">{'Credit Card'}</span>
-                                    </div>
-                                  </div>
+                                
                                 </div>
 
                                 <div>
