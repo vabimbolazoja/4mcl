@@ -498,6 +498,7 @@ export default function Cart() {
     console.log(errors)
 
     if (Object.keys(errors).length > 0) {
+      
       if (errors.phone) toast({
         title: "Checkout",
         description: errors?.phone,
