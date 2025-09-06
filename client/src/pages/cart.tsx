@@ -183,22 +183,22 @@ export default function Cart() {
   const validateForm = (phone: any, postalCode: any) => {
     const phoneRegex = /^\+?[0-9]{7,15}$/;
     const postalCodeRegex = /^[A-Za-z0-9\s-]{4,10}$/;
-  
+
     let errors: any = {};
-  
+
     // Phone validation
     if (!phoneRegex.test(phone)) {
       errors.phone = "Please enter a valid phone number (7–15 digits, optional +).";
     }
-  
+
     // Postal code validation
     if (!postalCodeRegex.test(postalCode)) {
       errors.postalCode = "Please enter a valid postal code (4–10 characters, letters/numbers only).";
     }
-  
+
     return errors;
   };
-  
+
 
 
 
@@ -332,7 +332,7 @@ export default function Cart() {
 
   const handleGuestPay = async (e) => {
     e.preventDefault();
- 
+
 
     setIsLoading(true);
     const deliveryInfo = {
@@ -410,7 +410,7 @@ export default function Cart() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setIsLoading(true);
     const deliveryInfo = {
       name: formData?.fullName,
@@ -484,7 +484,7 @@ export default function Cart() {
 
       return; // stop submission
     }
-  
+
     if (address && country && postalcode) {
       validateAddress(address, postalcode, country);
     }
@@ -498,7 +498,7 @@ export default function Cart() {
     console.log(errors)
 
     if (Object.keys(errors).length > 0) {
-      
+
       if (errors.phone) toast({
         title: "Checkout",
         description: errors?.phone,
@@ -512,7 +512,7 @@ export default function Cart() {
 
       return; // stop submission
     }
-    
+
     if (address && country && postalcode) {
       validateAddress(address, postalcode, country);
     }
@@ -657,7 +657,7 @@ export default function Cart() {
                       </DialogHeader>
                       {sessionStorage?.getItem('4mttoken') ?
                         <form onSubmit={handleAddressValidation} className="space-y-6">
-                        
+
                           <div>
                             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                               Full Name
@@ -813,7 +813,7 @@ export default function Cart() {
                         <div>
                           {guestForm ?
                             <div>
-                              
+
                               <form onSubmit={handleAddressValidationGuest} className="space-y-6">
                                 <div>
                                   <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
@@ -1027,6 +1027,24 @@ export default function Cart() {
         onCancel={() => {
           setOpenCardDetails(false)
           setOpenPaymentDetails(true)
+          setFormData({
+            email: '',
+            deliveryAddress: '',
+            fullName: sessionStorage?.getItem('4mtfname') ? sessionStorage?.getItem('4mtfname') : "",
+            phone: "",
+            postalCode: "",
+            country: ""
+          });
+
+          setGuestData({
+            email: '',
+            deliveryAddress: '',
+            fullName: "",
+            phone: "",
+            postalCode: "",
+            country: ""
+          })
+
         }
         }
         maskClosable={false}
