@@ -44,6 +44,7 @@ interface Order {
 export default function OrderHistory() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
+  const [showReveiew,setShowReview] = useState(false)
   const [openReturn, setOpenReturn] = useState(false)
   const { data: orders, isLoading, refetch, error } = useQuery({
     queryKey: [`${config.baseurl}orders/customer/${sessionStorage?.getItem('4mtxxd')}`],
@@ -231,12 +232,7 @@ export default function OrderHistory() {
                                 type="submit"
                                 style={{marginLeft:'1rem'}}
                                 onClick={() => {
-                                  toast({
-                                    title: "Add to Cart!",
-                                    description: `Coming soon!`,
-                                    variant: "destructive",
-
-                                  });
+                                  setShowReview(true)
                                 }}
                                 className="mt-2 bg-blue-600 text-white hover:bg-blue-700 py-1 font-semibold shadow-lg"
                               >
@@ -462,7 +458,7 @@ export default function OrderHistory() {
         )}
 
         <Modal
-          title="Return Promot!"
+          title="Return Prompt!"
           closable={{ 'aria-label': 'Custom Close Button' }}
           open={openReturn}
           footer={false}
@@ -476,6 +472,27 @@ export default function OrderHistory() {
           <Button
             type="submit"
             onClick={() => setOpenReturn(false)}
+            className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+          >
+            DONE
+          </Button>
+        </Modal>
+
+        <Modal
+          title="Review!"
+          closable={{ 'aria-label': 'Custom Close Button' }}
+          open={showReveiew}
+          footer={false}
+          onCancel={() => setShowReview(false)}
+        >
+          <p className="p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
+            Coming soon and will be available to you shortly."
+
+          </p>
+          <br />
+          <Button
+            type="submit"
+            onClick={() => setShowReview(false)}
             className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
           >
             DONE
