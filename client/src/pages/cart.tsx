@@ -1035,7 +1035,7 @@ export default function Cart() {
             postalCode: "",
             country: ""
           });
-
+          setStatus("")
           setGuestData({
             email: '',
             deliveryAddress: '',
@@ -1045,7 +1045,7 @@ export default function Cart() {
             country: ""
           })
 
-        }
+        }  
         }
         maskClosable={false}
       >
