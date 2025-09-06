@@ -307,7 +307,7 @@ export default function OrderHistory() {
                                       </div>
                                       <div className="text-right">
                                         <p className="font-semibold text-slate-900">
-                                          {order.paymentType === 'USD' ? '$' : '₦'}{item.price}
+                                          {order.paymentType === 'USD' ? '$' : '₦'}{item.subtotal}
                                         </p>
                                         <p className="text-sm text-slate-600">each</p>
                                       </div>
