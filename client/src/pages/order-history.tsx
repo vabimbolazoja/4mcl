@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from "@/components/ui/separator";
 import { Package, Calendar, CreditCard, Truck, Eye, MapPin, Phone, Mail, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import {Pagination} from 'antd'
 import config from "../../src/config"
 import paymentService from "../services/payment-service"
 import { Modal } from 'antd'
@@ -44,16 +45,53 @@ interface Order {
 export default function OrderHistory() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
-  const [showReveiew,setShowReview] = useState(false)
+  const [showReveiew, setShowReview] = useState(false)
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
   const [openReturn, setOpenReturn] = useState(false)
-  const { data: orders, isLoading, refetch, error } = useQuery({
-    queryKey: [`${config.baseurl}orders/customer/${sessionStorage?.getItem('4mtxxd')}`],
+  const { data, isLoading, refetch, error } = useQuery({
+    queryKey: [`${config.baseurl}orders/customer/${sessionStorage?.getItem('4mtxxd')}?page=${page}&limit=${limit}`],
     queryFn: () =>
       axios
-        .get(`${config.baseurl}orders/customer/${sessionStorage?.getItem('4mtxxd')}`)
+        .get(`${config.baseurl}orders/customer/${sessionStorage?.getItem('4mtxxd')}?page=${page}&limit=${limit}`)
         .then((res) => res.data),
     retry: 1,
   });
+
+  const orders = data || [];
+  const totalPages = data?.totalPages * 10 || 10;
+  const currentPage = data?.page || 1;
+
+  console.log(orders)
+
+
+  useEffect(() => {
+    setPage(currentPage)
+  }, [currentPage])
+
+
+
+
+  function itemRender(current, type, originalElement) {
+    if (type === "prev") {
+      return <a>Previous</a>;
+    }
+    if (type === "next") {
+      return <a>Next</a>;
+    }
+    return originalElement;
+  }
+
+  const pagination = (page, pageSize) => {
+    setPage(page);
+    setLimit(pageSize)
+
+  };
+
+  useEffect(() => {
+    refetch();
+
+  }, [limit, page]);
 
 
 
@@ -132,7 +170,7 @@ export default function OrderHistory() {
       else {
         toast({
           title: "Order Verification",
-          
+
           description: result?.message,
           variant: "destructive",
         });
@@ -218,7 +256,7 @@ export default function OrderHistory() {
                               </div>
                             </Badge>
                           </p>
-                          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             {order?.orderStatus === 'DELIVERED' &&
                               <Button
                                 type="submit"
@@ -230,7 +268,7 @@ export default function OrderHistory() {
                             {order?.orderStatus === 'DELIVERED' &&
                               <Button
                                 type="submit"
-                                style={{marginLeft:'1rem'}}
+                                style={{ marginLeft: '1rem' }}
                                 onClick={() => {
                                   setShowReview(true)
                                 }}
@@ -245,7 +283,7 @@ export default function OrderHistory() {
                         ORDER STATUS:
                         <Badge className={`${getStatusColor(order.orderStatus)} w-fit`}>
                           <div className="flex items-center">
-                          {getStatusIcon(order.orderStatus)}
+                            {getStatusIcon(order.orderStatus)}
                             <span className="ml-1 capitalize">{order.orderStatus}</span>
                           </div>
                         </Badge>
@@ -344,7 +382,7 @@ export default function OrderHistory() {
                                     </div>
                                   </div>
 
-                                
+
                                 </div>
 
                                 <div>
@@ -486,7 +524,7 @@ export default function OrderHistory() {
           onCancel={() => setShowReview(false)}
         >
           <p className="p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
-            Coming soon and will be available to you shortly."
+            Coming soon and will be available to you shortly.
 
           </p>
           <br />
@@ -499,12 +537,16 @@ export default function OrderHistory() {
           </Button>
         </Modal>
 
-        {/* Pagination could go here */}
-        {orders.orders?.length > 0 && (
-          <div className="mt-8 text-center">
-            <p className="text-slate-600">Showing {orders.length} recent orders</p>
-          </div>
-        )}
+       
+        {orders?.orders?.length > 0 && !isLoading &&
+          <div className="d-flex  justify-content-center align-items-center pt-5 pb-5" style={{ display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              current={page}
+              total={totalPages}
+              onChange={pagination}
+              itemRender={itemRender}
+            />{" "}
+          </div>}
       </div>
 
       <Footer />
