@@ -192,8 +192,10 @@ export default function Cart() {
     }
 
     // Postal code validation
-    if (!postalCodeRegex.test(postalCode)) {
-      errors.postalCode = "Please enter a valid postal code (4–10 characters, letters/numbers only).";
+    if (postalCode !== "") {
+      if (!postalCodeRegex.test(postalCode)) {
+        errors.postalCode = "Please enter a valid postal code (4–10 characters, letters/numbers only).";
+      }
     }
 
     return errors;
@@ -255,7 +257,7 @@ export default function Cart() {
         valid: false,
         message: `Invalid address: missing ${[
           !hasStreet && "street",
-          !postalCode && "postal code"
+          postalCode ? !postalCode && "postal code" : ""
         ].filter(Boolean).join(", ")
           }`,
         country: matchedCountry
@@ -282,6 +284,12 @@ export default function Cart() {
     setDeliveryCountry(result.country);
     setAcceptValid(result.valid);
     setStatus(result.message);
+    toast({
+      title: "Checkout",
+      description: result.message,
+      variant: "destructive",
+
+    });
     setAddressInvalid(true);
     setValidAddress(true);
 
@@ -291,17 +299,32 @@ export default function Cart() {
       if (origin?.sourceOrigin === "1") {
         if (country.toLowerCase().includes(cont.toLowerCase())) {
           setStatus(`✅ ${address}`);
+          toast({
+            title: "Checkout",
+            description: `✅ ${address}`,
+          });
           setValidAddress(false);
           setOpenCardDetails(true)
           setOpenPaymentDetails(false)
           setAddressInvalid(false);
         } else {
           setStatus("Shopping Location does not match provided address");
+          toast({
+            title: "Checkout",
+            description: "Shopping Location does not match provided address",
+            variant: "destructive",
+          });
           setAddressInvalid(true);
           setValidAddress(true);
         }
       } else {
         setStatus(`✅ ${address}`);
+        toast({
+          title: "Checkout",
+          description: `✅ ${address}`,
+
+
+        });
         setValidAddress(false);
         setOpenPaymentDetails(false)
         setOpenCardDetails(true)
@@ -476,11 +499,13 @@ export default function Cart() {
         description: errors?.phone,
         variant: "destructive",
       });
+      if (guestData?.postalCode !== "") {
       if (errors.postalCode) toast({
         title: "Checkout",
         description: errors?.postalCode,
         variant: "destructive",
-      });;
+      });
+    }
 
       return; // stop submission
     }
@@ -504,16 +529,18 @@ export default function Cart() {
         description: errors?.phone,
         variant: "destructive",
       });
-      if (errors.postalCode) toast({
-        title: "Checkout",
-        description: errors?.postalCode,
-        variant: "destructive",
-      });
+      if (guestData?.postalCode !== "") {
+        if (errors.postalCode) toast({
+          title: "Checkout",
+          description: errors?.postalCode,
+          variant: "destructive",
+        });
+      }
 
       return; // stop submission
     }
 
-    if (address && country && postalcode) {
+    if (address && country) {
       validateAddress(address, postalcode, country);
     }
   }
@@ -653,7 +680,7 @@ export default function Cart() {
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
-                        <DialogTitle className="text-xl font-bold">Order Details </DialogTitle>
+                        <DialogTitle className="text-xl font-bold">Delivery Information </DialogTitle>
                       </DialogHeader>
                       {sessionStorage?.getItem('4mttoken') ?
                         <form onSubmit={handleAddressValidation} className="space-y-6">
@@ -737,7 +764,7 @@ export default function Cart() {
                                 type={"text"}
                                 value={formData.postalCode}
                                 onChange={handleInputChange}
-                                required
+                                required={origin?.sourceOrigin === '0' ? true : false}
                                 className="w-full pr-12"
                                 placeholder="Postal Code"
                               />
@@ -793,15 +820,7 @@ export default function Cart() {
 
                             </div>
                           </div>
-                          {status && (
-                            <p
-                              className={`text-sm ${status.startsWith("✅") ? "text-green-600" : "text-red-600"
-                                }`}
-                            >
-                              {status}
-                            </p>
-                          )}
-
+                         
 
                           <Button
                             type="submit"
@@ -894,8 +913,8 @@ export default function Cart() {
                                       type={"text"}
                                       value={guestData.postalCode}
                                       onChange={handleInputChangeGuest}
-                                      required
                                       className="w-full pr-12"
+                                      required={origin?.sourceOrigin === '0' ? true : false}
                                       placeholder="Postal Code"
                                     />
                                   </div>
@@ -946,14 +965,7 @@ export default function Cart() {
                                       </div>
                                     </div>}
                                 </div>
-                                {status && (
-                                  <p
-                                    className={`text-sm ${status.startsWith("✅") ? "text-green-600" : "text-red-600"
-                                      }`}
-                                  >
-                                    {status}
-                                  </p>
-                                )}
+                            
 
                                 <div>
                                 </div>
@@ -1045,7 +1057,7 @@ export default function Cart() {
             country: ""
           })
 
-        }  
+        }
         }
         maskClosable={false}
       >

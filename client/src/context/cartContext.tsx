@@ -1,3 +1,4 @@
+// cartContext.tsx
 import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import { CartItem } from '../types/cart';
 
@@ -86,6 +87,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
   }
 };
 
+// 🔑 Utility function (can be imported anywhere)
+export const clearCartStorage = () => {
+  localStorage.removeItem('cart');
+};
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(cartReducer, { items: [] });
 
@@ -106,7 +112,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const removeItem = (id: string) => dispatch({ type: 'REMOVE_ITEM', payload: id });
   const incrementItem = (id: string) => dispatch({ type: 'INCREMENT_ITEM', payload: id });
   const decrementItem = (id: string) => dispatch({ type: 'DECREMENT_ITEM', payload: id });
-  const clearCart = () => dispatch({ type: 'CLEAR_CART' });
+  const clearCart = () => {
+    clearCartStorage(); // clears localStorage
+    dispatch({ type: 'CLEAR_CART' }); // clears state
+  };
 
   return (
     <CartContext.Provider

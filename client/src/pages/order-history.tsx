@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from "@/components/ui/separator";
 import { Package, Calendar, CreditCard, Truck, Eye, MapPin, Phone, Mail, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import {Pagination} from 'antd'
+import { Pagination } from 'antd'
+import { clearCartStorage } from '../context/cartContext';
 import config from "../../src/config"
 import paymentService from "../services/payment-service"
 import { Modal } from 'antd'
@@ -164,13 +165,13 @@ export default function OrderHistory() {
     try {
       const result = await paymentService.verify({ ref: ref, id: id });
       if (result) {
+        clearCartStorage()
         refetch()
-        localStorage.clear();
+
       }
       else {
         toast({
           title: "Order Verification",
-
           description: result?.message,
           variant: "destructive",
         });
@@ -249,22 +250,39 @@ export default function OrderHistory() {
                               day: 'numeric'
                             })}
                           </div>
-                          <p className="font-semibold text-slate-900">Payment
+                          <p className="font-semibold text-slate-900">Payment Status
                             <Badge className={`${getStatusColor(order.paymentStatus)} w-fit`}>
                               <div className="flex items-center">
                                 <span className="ml-1 capitalize">{order.paymentStatus}</span>
                               </div>
                             </Badge>
                           </p>
+
+
+                        </div>
+
+
+                      </div>
+                      <div>
+                        <div>
+                          <div>
+                            ORDER STATUS:
+                            <Badge className={`${getStatusColor(order.orderStatus)} w-fit`}>
+                              <div className="flex items-center">
+                                {getStatusIcon(order.orderStatus)}
+                                <span className="ml-1 capitalize">{order.orderStatus}</span>
+                              </div>
+                            </Badge>
+                          </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             {order?.orderStatus === 'DELIVERED' &&
-                              <Button
-                                type="submit"
+                              <div
                                 onClick={() => setOpenReturn(true)}
-                                className="mt-2 bg-red-600 text-white hover:bg-red-700 py-1 font-semibold shadow-lg"
+                                className="mt-2 text-success"
+                                style={{ textDecoration: 'underline', color:'green' }}
                               >
                                 Return Item
-                              </Button>}
+                              </div>}
                             {order?.orderStatus === 'DELIVERED' &&
                               <Button
                                 type="submit"
@@ -278,15 +296,7 @@ export default function OrderHistory() {
                               </Button>}
 
                           </div>
-
                         </div>
-                        ORDER STATUS:
-                        <Badge className={`${getStatusColor(order.orderStatus)} w-fit`}>
-                          <div className="flex items-center">
-                            {getStatusIcon(order.orderStatus)}
-                            <span className="ml-1 capitalize">{order.orderStatus}</span>
-                          </div>
-                        </Badge>
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
@@ -537,7 +547,7 @@ export default function OrderHistory() {
           </Button>
         </Modal>
 
-       
+
         {orders?.orders?.length > 0 && !isLoading &&
           <div className="d-flex  justify-content-center align-items-center pt-5 pb-5" style={{ display: 'flex', justifyContent: 'center' }}>
             <Pagination
