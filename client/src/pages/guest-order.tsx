@@ -8,9 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import Logo from "../../attached_assets/logoSvg.svg"
 import paymentService from "../services/payment-service"
 import { useLocation } from "wouter";
-import { clearCartStorage } from '../context/cartContext';
 import { ThreeDots } from "react-loader-spinner";
-
+import { useCart } from '../context/cartContext';
 import { Progress } from 'antd'
 export default function Login() {
     const [formData, setFormData] = useState({
@@ -18,6 +17,7 @@ export default function Login() {
         password: ''
     });
     const [showPassword, setShowPassword] = useState(false);
+    const { state, clearCart, incrementItem, decrementItem } = useCart();
     const [processorStatus, setProcessorStatus] = useState("")
     const [orderRef, setOrderRef] = useState("")
     const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +54,7 @@ export default function Login() {
             if (result) {
                 setIsLoading(false)
                 setProcessorStatus(result?.paystack?.data?.status)
-                clearCartStorage();
+                clearCart();
                 toast({
                     title: "Order Verification",
                     description: 'Payment Verification Successful',

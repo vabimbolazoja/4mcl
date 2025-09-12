@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Package, Calendar, CreditCard, Truck, Eye, MapPin, Phone, Mail, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from 'antd'
-import { clearCartStorage } from '../context/cartContext';
+import { useCart } from '../context/cartContext';
 import config from "../../src/config"
 import paymentService from "../services/payment-service"
 import { Modal } from 'antd'
@@ -49,6 +49,7 @@ export default function OrderHistory() {
   const [showReveiew, setShowReview] = useState(false)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
+  const { state, clearCart, incrementItem, decrementItem } = useCart();
   const [openReturn, setOpenReturn] = useState(false)
   const { data, isLoading, refetch, error } = useQuery({
     queryKey: [`${config.baseurl}orders/customer/${sessionStorage?.getItem('4mtxxd')}?page=${page}&limit=${limit}`],
@@ -165,7 +166,7 @@ export default function OrderHistory() {
     try {
       const result = await paymentService.verify({ ref: ref, id: id });
       if (result) {
-        clearCartStorage()
+        clearCart()
         refetch()
 
       }
@@ -275,14 +276,7 @@ export default function OrderHistory() {
                             </Badge>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            {order?.orderStatus === 'DELIVERED' &&
-                              <div
-                                onClick={() => setOpenReturn(true)}
-                                className="mt-2 text-success"
-                                style={{ textDecoration: 'underline', color:'green' }}
-                              >
-                                Return Item
-                              </div>}
+                            
                             {order?.orderStatus === 'DELIVERED' &&
                               <Button
                                 type="submit"
@@ -294,6 +288,14 @@ export default function OrderHistory() {
                               >
                                 Review Order
                               </Button>}
+                              {order?.orderStatus === 'DELIVERED' &&
+                              <p
+                                onClick={() => setOpenReturn(true)}
+                                className="mt-2 text-info pl-4"
+                                style={{ textDecoration: '',fontWeight:'700', color:'blue' }}
+                              >
+                                Return Item
+                              </p>}
 
                           </div>
                         </div>

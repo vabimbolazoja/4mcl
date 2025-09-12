@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-
+import authService from "../services/auth-service"
+import { message } from "antd";
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -48,25 +49,36 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const result = await authService.contact({ fullName:formData?.name, email: formData?.email, message:formData?.message, subject:formData?.subject });
+      if (result) {
+        setIsSubmitting(false)
+        toast({
+          title: "Contact Us",
+          description: result?.message,
+        });
+        setFormData({
+          email: '',
+          name: '',
+          subject: "",
+          message: "",
+        });
+      }
+      else {
+        setIsSubmitting(false)
+        toast({
+          title: "Contact Us",
+          description: result?.message,
+          variant: "destructive",
+        });
+      }
+    } catch (err: any) {
+      setIsSubmitting(false)
       toast({
-        title: "Message Sent!",
-        description: "We'll get back to you within 24 hours.",
-      });
-      
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: "Contact Us",
+        description: err?.response?.data?.message,
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

@@ -8,6 +8,10 @@ const authService = {
         serviceInstance.post(`${config.baseurl}login`, request).then(({ data }) => ({
             ...data,
         })),
+        contact: (request) =>
+        serviceInstance.post(`${config.baseurl}contact`, request).then(({ data }) => ({
+            ...data,
+        })),
 
     resendMailVerify: (request) =>
         serviceInstance.get(`${config.baseurl}resend-mail-verify?email=${request?.email}`, request).then(({ data }) => ({
@@ -41,7 +45,7 @@ const authService = {
 
     resetPassword: (data) =>
         serviceInstance
-            .post(`${config.baseurl}reset-password?token=${data?.token}`, {password:data?.password})
+            .post(`${config.baseurl}reset-password?token=${data?.token}`, { password: data?.password })
             .then(({ data, status }) => ({
                 ...data,
                 status,
