@@ -192,7 +192,7 @@ export default function Cart() {
     }
 
     // Postal code validation
-    if (postalCode !== "") {
+    if (origin?.sourceOrigin === "0") {
       if (!postalCodeRegex.test(postalCode)) {
         errors.postalCode = "Please enter a valid postal code (4–10 characters, letters/numbers only).";
       }
@@ -499,13 +499,13 @@ export default function Cart() {
         description: errors?.phone,
         variant: "destructive",
       });
-      if (guestData?.postalCode !== "") {
-      if (errors.postalCode) toast({
-        title: "Checkout",
-        description: errors?.postalCode,
-        variant: "destructive",
-      });
-    }
+      if (origin?.sourceOrigin === "0") {
+        if (errors.postalCode) toast({
+          title: "Checkout",
+          description: errors?.postalCode,
+          variant: "destructive",
+        });
+      }
 
       return; // stop submission
     }
@@ -529,7 +529,7 @@ export default function Cart() {
         description: errors?.phone,
         variant: "destructive",
       });
-      if (guestData?.postalCode !== "") {
+      if (origin?.sourceOrigin === "0") {
         if (errors.postalCode) toast({
           title: "Checkout",
           description: errors?.postalCode,
@@ -753,24 +753,25 @@ export default function Cart() {
                             />
 
                           </div>
-                          <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                              Postal Code
-                            </label>
-                            <div className="relative">
-                              <Input
-                                id="postalCode"
-                                name="postalCode"
-                                type={"text"}
-                                value={formData.postalCode}
-                                onChange={handleInputChange}
-                                required={origin?.sourceOrigin === '0' ? true : false}
-                                className="w-full pr-12"
-                                placeholder="Postal Code"
-                              />
+                          {origin?.sourceOrigin === "0" &&
+                            <div>
+                              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+                                Postal Code
+                              </label>
+                              <div className="relative">
+                                <Input
+                                  id="postalCode"
+                                  name="postalCode"
+                                  type={"text"}
+                                  value={formData.postalCode}
+                                  onChange={handleInputChange}
+                                  required
+                                  className="w-full pr-12"
+                                  placeholder="Postal Code"
+                                />
 
-                            </div>
-                          </div>
+                              </div>
+                            </div>}
                           <div>
                             <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
                               Country
@@ -820,7 +821,7 @@ export default function Cart() {
 
                             </div>
                           </div>
-                         
+
 
                           <Button
                             type="submit"
@@ -902,23 +903,24 @@ export default function Cart() {
                                   />
 
                                 </div>
-                                <div>
-                                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                                    Postal Code
-                                  </label>
-                                  <div className="relative">
-                                    <Input
-                                      id="postalCode"
-                                      name="postalCode"
-                                      type={"text"}
-                                      value={guestData.postalCode}
-                                      onChange={handleInputChangeGuest}
-                                      className="w-full pr-12"
-                                      required={origin?.sourceOrigin === '0' ? true : false}
-                                      placeholder="Postal Code"
-                                    />
-                                  </div>
-                                </div>
+                                {origin?.sourceOrigin === '0' &&
+                                  <div>
+                                    <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+                                      Postal Code
+                                    </label>
+                                    <div className="relative">
+                                      <Input
+                                        id="postalCode"
+                                        name="postalCode"
+                                        type={"text"}
+                                        value={guestData.postalCode}
+                                        onChange={handleInputChangeGuest}
+                                        className="w-full pr-12"
+                                        required
+                                        placeholder="Postal Code"
+                                      />
+                                    </div>
+                                  </div>}
                                 <div>
                                   <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
                                     Country
@@ -965,7 +967,7 @@ export default function Cart() {
                                       </div>
                                     </div>}
                                 </div>
-                            
+
 
                                 <div>
                                 </div>
