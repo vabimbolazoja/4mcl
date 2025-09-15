@@ -303,7 +303,8 @@ export default function OrderHistory() {
                       <div className="flex items-center space-x-4">
                         <div className="text-right">
                           <p className="font-semibold text-slate-900">
-                            {order.paymentType === 'USD' ? '$' : '₦'}{order.totalAmt}
+                            {formatCurrency(order?.totalAmt, order.paymentType === 'USD' ? "USD" : "NGN")}
+
                           </p>
                           <p className="text-sm text-slate-600">{order.orders.length} item{order.orders.length > 1 ? 's' : ''}</p>
                         </div>
