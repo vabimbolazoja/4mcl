@@ -223,12 +223,12 @@ export default function Contact() {
                 
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-2">Do you ship internationally?</h4>
-                  <p className="text-slate-600 text-sm sm:text-base">Yes! We ship to most countries worldwide. Shipping costs and times vary by destination.</p>
+                  <p className="text-slate-600 text-sm sm:text-base">Yes, we ship within the UK, USA, Canada and Nigeria</p>
                 </div>
                 
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-2">What's your return policy?</h4>
-                  <p className="text-slate-600 text-sm sm:text-base">We offer a 30-day return policy for non-perishable items in original condition.</p>
+                  <p className="text-slate-600 text-sm sm:text-base">We offer a 14-day return policy for non-perishable items in original condition.</p>
                 </div>
                 
                 <div>
