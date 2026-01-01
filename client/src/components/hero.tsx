@@ -12,7 +12,7 @@ export default function Hero() {
               <span className="text-primary-600">Delivered to Your Door</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-600 mb-6 sm:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Connect with your heritage through premium African foods. From fresh yams to exotic spices, we bring the authentic taste of home to diaspora communities worldwide.
+              Connect with your heritage through premium African foods. From fresh ground egusi seeds and okpa flour, to exotic seasonings like okpeye Nsukka and more; we bring the authentic taste of home to diaspora communities worldwide.
             </p>
             <div className="flex justify-center lg:justify-start mb-6 sm:mb-8">
               <Button 
