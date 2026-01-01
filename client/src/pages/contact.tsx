@@ -23,19 +23,19 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email Us",
-      content: "support@4marketdays.com",
+      content: "customerservice@4marketdays.com",
       description: "Send us an email anytime"
     },
     {
       icon: Phone,
       title: "Call Us",
-      content: "+1 (555) 123-4567",
+      content: "+1 (506) 650 8084 , +2349032023215",
       description: "Mon-Fri 9AM-6PM EST"
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      content: "123 Business St, Suite 100",
+      content: "661 Millidge Ave, Saint John, Nigeria: 14 Odenigwe Road Near Ankys Bakery Nsukka, Enugu State Nigeria",
       description: "New York, NY 10001"
     },
     {
@@ -111,7 +111,7 @@ export default function Contact() {
       {/* Contact Information */}
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-12 sm:mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16">
             {contactInfo.map((info, index) => (
               <Card key={index} className="text-center hover:shadow-xl transition-shadow">
                 <CardContent className="p-6 sm:p-8">
@@ -119,7 +119,7 @@ export default function Contact() {
                     <info.icon className="text-primary-600 h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-2">{info.title}</h3>
-                  <p className="text-slate-900 font-medium mb-1 text-sm sm:text-base">{info.content}</p>
+                  <p className="text-slate-900 font-medium mb-1 text-sm sm:text-base" style={{whiteSpace:'wrap'}}>{info.content}</p>
                   <p className="text-slate-600 text-xs sm:text-sm">{info.description}</p>
                 </CardContent>
               </Card>

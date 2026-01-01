@@ -30,7 +30,7 @@ export default function ProductCategories() {
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">Shop by Category</h2>
           <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Discover authentic African foods organized by type. From staples to spices, find everything you need.
+            Discover authentic African foods organized by 
           </p>
         </div>
 

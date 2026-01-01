@@ -5,28 +5,21 @@ export default function Testimonials() {
   const testimonials = [
     {
       id: 1,
-      name: "Adaora Okafor",
+      name: "Sarah Olokode",
       location: "London, UK",
       rating: 5,
-      text: "Finally found authentic African foods that taste just like home! The yams are fresh and the spices are exactly what I've been looking for. Delivery was fast and packaging was excellent.",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b890?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"
+      text: "Opening the package felt nostalgic. The egusi smelled just like the market back home. Just that home freshness! What a nice way to reconnect with our authenticity through our heritage food",
+      avatar: "https://t4.ftcdn.net/jpg/07/03/86/11/360_F_703861114_7YxIPnoH8NfmbyEffOziaXy0EO1NpRHD.jpg"
     },
     {
       id: 2,
-      name: "Kwame Asante",
+      name: "Amara Egboma",
       location: "Toronto, Canada",
       rating: 5,
-      text: "4marketdays has made it possible for me to cook traditional meals for my family. The quality is outstanding and my kids now love African cuisine. Highly recommended!",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"
+      text: "I’ve tried many African food stores, but none capture the real flavors like this. Their okpa flour and okpeye remind me why our food is special.”",
+      avatar: "https://t4.ftcdn.net/jpg/07/03/86/11/360_F_703861114_7YxIPnoH8NfmbyEffOziaXy0EO1NpRHD.jpg"
     },
-    {
-      id: 3,
-      name: "Fatima Diallo",
-      location: "New York, USA",
-      rating: 5,
-      text: "The convenience of ordering authentic African ingredients online is amazing. Everything arrived fresh and well-packaged. This service is a game-changer for the diaspora community.",
-      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"
-    }
+   
   ];
 
   return (
@@ -39,7 +32,7 @@ export default function Testimonials() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8">
           {testimonials.map((testimonial) => (
             <Card key={testimonial.id} className="hover:shadow-xl transition-shadow">
               <CardContent className="p-6 sm:p-8">
