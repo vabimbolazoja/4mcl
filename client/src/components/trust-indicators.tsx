@@ -5,17 +5,17 @@ export default function TrustIndicators() {
     {
       icon: Leaf,
       title: "Fresh & Organic",
-      description: "Sourced directly from trusted African farms"
+      description: "Sourced directly from trusted local African farm harvests"
     },
     {
       icon: Globe,
       title: "Global Delivery",
-      description: "Worldwide shipping to diaspora communities"
+      description: "Worldwide shipping to diaspora communities starting with the US, UK and canada"
     },
     {
       icon: Award,
       title: "Quality Certified",
-      description: "FDA approved and quality guaranteed"
+      description: "NAFDAC, FDA, and SFCL approved and quality guaranteed"
     },
     {
       icon: Headphones,
