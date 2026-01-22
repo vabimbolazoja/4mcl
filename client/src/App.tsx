@@ -24,6 +24,7 @@ import ResetPassword from "@/pages/reset-password"
 import ProductCategory from "@/pages/product-by-categories"
 import GuestOrder from "@/pages/guest-order"
 import TrackOrder from "@/pages/track-order"
+import StoreLocations from "@/pages/stores"
 import 'animate.css';
 
 // Cart Context
@@ -98,6 +99,7 @@ function Router() {
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/products-category" component={ProductCategory} />
       <Route path="/track-order" component={TrackOrder} />
+      <Route path="/store-locations" component={StoreLocations} />
 
       
       <Route path="/support" component={Support} />

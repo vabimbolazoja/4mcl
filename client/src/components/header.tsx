@@ -28,6 +28,8 @@ export default function Header() {
     { label: "Contact", href: "/contact" },
     { label: "Change Shopping Location", href: "shop-location" },
     { label: "My Orders", href: "/orders" },
+    { label: "Store Location", href: "/store-locations" },
+
   ];
 
   const navItems = !sessionStorage?.getItem('4mttoken') ? [
@@ -36,6 +38,8 @@ export default function Header() {
     { label: "About", href: "/about" },
     { label: "Change Shopping Location", href: "shop-location" },
     { label: "Contact", href: "/contact" },
+    { label: "Store Location", href: "/store-locations" },
+
   ] : navItemsAuth;
 
 
@@ -152,7 +156,7 @@ export default function Header() {
                       <a
                         key={item.label}
                         href={item.href}
-                        style={{whiteSpace:'nowrap'}}
+                        style={{ whiteSpace: 'nowrap' }}
                         className="text-slate-700 hover:text-primary-600 font-medium transition-colors py-2"
                         onClick={() => setIsMenuOpen(false)}
                       >
@@ -172,7 +176,7 @@ export default function Header() {
                           <Link
                             key={item.label}
                             href={item.href}
-                            style={{whiteSpace:'nowrap'}}
+                            style={{ whiteSpace: 'nowrap' }}
                             className="text-slate-700 hover:text-primary-600 font-medium transition-colors"
                           >
                             {item.label}
