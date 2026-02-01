@@ -233,7 +233,7 @@ export default function Cart() {
     const hasStreet = lowerAddress.includes("street");
 
     // Country list (normalize to lowercase for matching)
-    const countries = ["Nigeria", "USA", "Canada", "United States", "UK", "Netherlands"];
+    const countries = ["Nigeria", "USA", "Canada", "United States", "UK"];
 
     // Find actual matched country (case-insensitive)
     const matchedCountry = countries.find(country =>
@@ -250,16 +250,12 @@ export default function Cart() {
     }
 
     // ✅ If country exists, check rest
-    if (hasStreet) {
+    if (countries) {
       return { valid: true, message: "Valid address", country: matchedCountry };
     } else {
       return {
         valid: false,
-        message: `Invalid address: missing ${[
-          !hasStreet && "street",
-          postalCode ? !postalCode && "postal code" : ""
-        ].filter(Boolean).join(", ")
-          }`,
+        message: `Invalid address: missing Country`,
         country: matchedCountry
       };
     }
@@ -355,8 +351,6 @@ export default function Cart() {
 
   const handleGuestPay = async (e) => {
     e.preventDefault();
-
-
     setIsLoading(true);
     const deliveryInfo = {
       name: guestData?.fullName,
@@ -390,7 +384,6 @@ export default function Cart() {
     try {
       const result = await paymentService.initiate(data);
       if (result) {
-        setIsLoading(false)
         setPaymentPage(true)
         setTimeout(() => {
           window.location.href = result.paystack.data?.authorization_url;
@@ -433,7 +426,6 @@ export default function Cart() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setIsLoading(true);
     const deliveryInfo = {
       name: formData?.fullName,
@@ -464,7 +456,6 @@ export default function Cart() {
     try {
       const result = await paymentService.initiate(data);
       if (result) {
-        setIsLoading(false)
         setPaymentPage(true)
         setTimeout(() => {
           window.location.href = result.paystack.data?.authorization_url;
@@ -788,7 +779,7 @@ export default function Cart() {
                                       <SelectValue placeholder="Select a country" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      {['USA', 'CANADA', 'NETHERLANDS']?.map((cont) => (
+                                      {['USA', 'CANADA', 'UK']?.map((cont) => (
                                         <SelectItem key={cont} value={cont}>
                                           {cont}
                                         </SelectItem>
@@ -936,7 +927,7 @@ export default function Cart() {
                                           <SelectValue placeholder="Select a country" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          {['USA', 'CANADA', 'NETHERLANDS']?.map((cont) => (
+                                          {['USA', 'CANADA', 'UK']?.map((cont) => (
                                             <SelectItem key={cont} value={cont}>
                                               {cont}
                                             </SelectItem>

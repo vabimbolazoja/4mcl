@@ -55,13 +55,13 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
     <Card className="group hover:shadow-xl hover:shadow-emerald-100 transition-all duration-300 hover:border-emerald-200 cursor-pointer">
       <CardContent className="p-0">
         <Link href={`/product/${product._id}`}>
-        <div className="overflow-hidden rounded-t-lg aspect-[4/3]">
-  <img
-    src={product.imageUrls[0]}
-    alt={product.name}
-    className="w-full h-full object-contain"
-  />
-</div>
+          <div className="overflow-hidden rounded-t-lg aspect-[4/3]">
+            <img
+              src={product.imageUrls[0]}
+              alt={product.name}
+              className="w-full h-full object-contain"
+            />
+          </div>
 
         </Link>
         <div className="p-4 sm:p-6">
