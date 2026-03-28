@@ -9,10 +9,9 @@ import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useCart } from '../context/cartContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import config from "../../src/config"
+import { convertToCAD, convertToGBP } from "../lib/utils"
 import { useToast } from "@/hooks/use-toast";
 import paymentService from "../services/payment-service"
-import axios from 'axios'
 import { GlobalStateContext } from "../context/globalContext"
 import { Radio, Modal } from 'antd'
 import {
@@ -34,6 +33,10 @@ export default function Cart() {
   const [isValidating, setVerifyingAddress] = useState(false)
   const [acceptValid, setAcceptValid] = useState(false)
   const [validAddress, setValidAddress] = useState(true)
+  const [amountGbp, setAmountGbp] = useState(null);
+  const [amountCad, setAmountCad] = useState(null);
+  const [gbpRates, setGbpRates] = useState({});
+  const [cadRates, setCadRates] = useState({});
   const { origin, setOrigin } = useContext(GlobalStateContext);
   const [addressInvalid, setAddressInvalid] = useState(false)
   const [status, setStatus] = useState("")
@@ -43,6 +46,7 @@ export default function Cart() {
   const { toast } = useToast();
   const [radioValue, setRadioValue] = useState(1);
   const [configData, setConfigData] = useState<any[]>([]);
+  const cartItems = state?.items;
 
 
   const style = {
@@ -97,6 +101,41 @@ export default function Cart() {
   }
 
 
+
+  const rateFuncGBP = async (amt) => {
+    const ratesGBP = await convertToGBP(amt);
+    return ratesGBP;
+
+  }
+
+  const rateFuncCanadian = async (amt) => {
+    const ratesCAD = await convertToCAD(amt);
+    return ratesCAD;
+
+  }
+
+  useEffect(() => {
+    if (!cartItems?.length) return;
+
+    const loadRates = async () => {
+      const gbpTemp = {};
+      const cadTemp = {};
+
+      for (const item of cartItems) {
+        if (item.priceUsd) {
+          gbpTemp[item.id] = await rateFuncGBP(item.priceUsd);
+          cadTemp[item.id] = await rateFuncCanadian(item.priceUsd);
+        }
+      }
+
+      setGbpRates(gbpTemp);
+      setCadRates(cadTemp);
+    };
+
+    loadRates();
+  }, [cartItems]);
+
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
@@ -111,7 +150,6 @@ export default function Cart() {
     }));
   };
 
-  const cartItems = state?.items;
 
   const [currency, setCurrency] = useState<'USD' | 'NGN'>('USD');
 
@@ -127,12 +165,27 @@ export default function Cart() {
     removeItem(id)
   };
 
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => {
-      const price = origin?.sourceOrigin === "0" ? parseFloat(item.priceUsd) : parseFloat(item.priceNaira);
-      return total + (price * item.quantity);
-    }, 0);
-  };
+const calculateTotal = () => {
+  return cartItems.reduce((total, item) => {
+    let price = 0;
+
+    if (origin?.sourceOrigin === "2") {
+      // GBP
+      price = parseFloat(gbpRates[item.id] ?? 0);
+    } else if (origin?.sourceOrigin === "3") {
+      // CAD
+      price = parseFloat(cadRates[item.id] ?? 0);
+    } else if (origin?.sourceOrigin === "0") {
+      // USD
+      price = parseFloat(item.priceUsd ?? 0);
+    } else {
+      // NGN (default)
+      price = parseFloat(item.priceNaira ?? 0);
+    }
+
+    return total + (price * (item.quantity ?? 1));
+  }, 0);
+};
 
   function generateDeliveryFee(): number {
     if (!cartItems.length || !configData.length || !deliveryCountry) return 0;
@@ -601,9 +654,14 @@ export default function Cart() {
 
                       <div className="flex items-center justify-between sm:justify-end">
                         <p className="font-bold text-slate-900">
-                          {origin?.sourceOrigin === "0"
-                            ? `$${(parseFloat(item.priceUsd) * item.quantity).toFixed(2)}`
-                            : `₦${(parseFloat(item.priceNaira) * item.quantity).toLocaleString()}`
+                          {
+                            origin?.sourceOrigin === "2"
+                              ? `GBP ${(parseFloat(gbpRates[item.id]) * item.quantity || 0).toFixed(2)}`
+                              : origin?.sourceOrigin === "3"
+                                ? `CAD ${(parseFloat(cadRates[item.id]) * item.quantity || 0).toFixed(2)}`
+                                : origin?.sourceOrigin === "0"
+                                  ? `$${(parseFloat(item.priceUsd) * item.quantity).toFixed(2)}`
+                                  : `₦${(parseFloat(item.priceNaira) * item.quantity).toLocaleString()}`
                           }
                         </p>
                         <Button
@@ -639,6 +697,20 @@ export default function Cart() {
                       USD ($)
                     </Button>
                     <Button
+                      variant={origin?.sourceOrigin === "2" ? 'default' : 'outline'}
+                      size="sm"
+                      className="flex-1"
+                    >
+                      GBP (E)
+                    </Button>
+                    <Button
+                      variant={origin?.sourceOrigin === "3" ? 'default' : 'outline'}
+                      size="sm"
+                      className="flex-1"
+                    >
+                      CAD (CA)
+                    </Button>
+                    <Button
                       variant={origin?.sourceOrigin === "1" ? 'default' : 'outline'}
                       size="sm"
                       className="flex-1"
@@ -654,7 +726,7 @@ export default function Cart() {
                     <span className="font-medium">
                       {origin?.sourceOrigin === "0"
                         ? `$${calculateTotal().toFixed(2)}`
-                        : `₦${calculateTotal().toLocaleString()}`
+                        : origin.sourceOrigin === "2" ? `GBP${calculateTotal().toFixed(2)}` : origin?.sourceOrigin === "3" ? `CAD${calculateTotal().toFixed(2)}` : `₦${calculateTotal().toLocaleString()}`
                       }
                     </span>
                   </div>

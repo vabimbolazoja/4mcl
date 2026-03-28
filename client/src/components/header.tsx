@@ -228,7 +228,7 @@ export default function Header() {
               title=""
               open={origin.sourceOrigin === "" ? true : false}
               footer={false}
-              width={400}
+              width={500}
               maskClosable={false}
             >
               <div>
@@ -253,7 +253,33 @@ export default function Header() {
 
                         }}
                       >
-                        Outside Nigeria
+                        USA
+                      </Button>
+                      <Button
+                        type="submit"
+                        className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+                        onClick={() => {
+                          setOrigin((prevState) => ({
+                            ...prevState,
+                            sourceOrigin: "2",
+                          }));
+
+                        }}
+                      >
+                        United Kingdom
+                      </Button>
+                      <Button
+                        type="submit"
+                        className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+                        onClick={() => {
+                          setOrigin((prevState) => ({
+                            ...prevState,
+                            sourceOrigin: "3",
+                          }));
+
+                        }}
+                      >
+                        Canada
                       </Button>
                       <Button
                         type="submit"
@@ -268,7 +294,7 @@ export default function Header() {
 
                         }}
                       >
-                        Within Nigeria
+                         Nigeria
                       </Button>
                     </div>
                   </div>

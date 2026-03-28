@@ -1,11 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useCart } from '../context/cartContext';
 import { useToast } from "@/hooks/use-toast";
 import { Modal } from "antd";
+import { convertToCAD, convertToGBP } from "../lib/utils"
 interface ProductCardProps {
   product: {
     id: number;
@@ -23,6 +24,8 @@ interface ProductCardProps {
 export default function ProductCard({ product, origin }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [openCartMsg, setOpenCartMsg] = useState(false)
+  const [amountGbp, setAmountGbp] = useState(null);
+  const [amountCad, setAmountCad] = useState(null);
   const [location, setLocation] = useLocation();
   const [cartMsg, setCartMsg] = useState("")
   const { addItem, incrementItem, decrementItem, removeItem, state } = useCart();
@@ -47,6 +50,32 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
       setCartMsg(`${product?.name} of the minum order quanity ${product?.moq} is now added to your cart.`)
     }
   }
+
+  const rateFuncCanadian = async (amt) => {
+    const ratesCAD = await convertToCAD(amt);
+    return ratesCAD;
+
+  }
+
+  const rateFuncGBP = async (amt) => {
+    const ratesGBP = await convertToGBP(amt);
+    return ratesGBP;
+
+  }
+
+  useEffect(() => {
+    if (!product?.priceUsd) return;
+
+    const loadRates = async () => {
+      const gbp = await rateFuncGBP(product.priceUsd);
+      const cad = await rateFuncCanadian(product.priceUsd);
+
+      setAmountGbp(gbp);
+      setAmountCad(cad);
+    };
+
+    loadRates();
+  }, [product?.priceUsd]);
 
 
 
@@ -83,8 +112,17 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
           <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">MOQ:{product.moq}</p>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center space-x-2">
-              <span className="text-base sm:text-lg font-bold text-slate-900">{origin === '0' ? "$" : "N"}{origin === "0" ? product.priceUsd : origin === "1" ? product?.priceNaira : 'NA'}</span>
-            </div>
+              <span className="text-base sm:text-lg font-bold text-slate-900">
+                {origin === '0'
+                  ? "$" + product.priceUsd
+                  : origin === '2'
+                    ? "GBP " + (amountGbp ?? "...")
+                    : origin === '3'
+                      ? "CA " + (amountCad ?? "...")
+                      : origin === '1'
+                        ? "N" + product.priceNaira
+                        : ""}
+              </span>            </div>
             {product?.stock < 1 ?
               <div style={{ border: '1px solid red', background: 'red', padding: '8px', color: 'white', borderRadius: '10px' }}>
                 Sold Out
