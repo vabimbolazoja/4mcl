@@ -9,20 +9,27 @@ import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useCart } from '../context/cartContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { convertToCAD, convertToGBP } from "../lib/utils"
+import { convertToCAD, convertToGBP, convertToUSD, convertCADtoUSD, convertGBPtoUSD } from "../lib/utils"
 import { useToast } from "@/hooks/use-toast";
 import paymentService from "../services/payment-service"
 import { GlobalStateContext } from "../context/globalContext"
 import { Radio, Modal } from 'antd'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useForm, Controller } from 'react-hook-form';
 import configService from "../services/config-service"
+import Location from "../components/Location/index"
+import { useCurrencyConvert } from "../hooks/useCurrencyConvert"
 export default function Cart() {
+
+
+  const {
+    register,
+    reset,
+    setValue,
+    unregister, clearErrors,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm();
 
   const { state, clearCart, incrementItem, decrementItem, removeItem } = useCart();
   const [openPaymentDetails, setOpenPaymentDetails] = useState(false)
@@ -42,6 +49,18 @@ export default function Cart() {
   const [status, setStatus] = useState("")
   const [location, setLocation] = useLocation();
   const [addObj, setAddObj] = useState({})
+  const [guestPostal, setGuestPostal] = useState("")
+  const [guestCity, setGuestCity] = useState("")
+  const [guestAddress, setGuestAddress] = useState("")
+  const [guestAddressInfo, setGuestLocationIngo] = useState("")
+  const [guestState, setGuestState] = useState("")
+
+  const [userPostal, setUserPostal] = useState("")
+  const [userCity, setUserCity] = useState("")
+  const [userAddress, setUserAddress] = useState("")
+  const [userAddressInfo, setUserLocationInfo] = useState("")
+  const [userState, setUserState] = useState("")
+
   const [deliveryCountry, setDeliveryCountry] = useState("")
   const { toast } = useToast();
   const [radioValue, setRadioValue] = useState(1);
@@ -104,15 +123,16 @@ export default function Cart() {
 
   const rateFuncGBP = async (amt) => {
     const ratesGBP = await convertToGBP(amt);
-    return ratesGBP;
+    return ratesGBP?.gbp;
 
   }
 
   const rateFuncCanadian = async (amt) => {
     const ratesCAD = await convertToCAD(amt);
-    return ratesCAD;
-
+    return ratesCAD?.cad;
   }
+
+  console.log(rateFuncCanadian(200))
 
   useEffect(() => {
     if (!cartItems?.length) return;
@@ -165,27 +185,27 @@ export default function Cart() {
     removeItem(id)
   };
 
-const calculateTotal = () => {
-  return cartItems.reduce((total, item) => {
-    let price = 0;
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => {
+      let price = 0;
 
-    if (origin?.sourceOrigin === "2") {
-      // GBP
-      price = parseFloat(gbpRates[item.id] ?? 0);
-    } else if (origin?.sourceOrigin === "3") {
-      // CAD
-      price = parseFloat(cadRates[item.id] ?? 0);
-    } else if (origin?.sourceOrigin === "0") {
-      // USD
-      price = parseFloat(item.priceUsd ?? 0);
-    } else {
-      // NGN (default)
-      price = parseFloat(item.priceNaira ?? 0);
-    }
+      if (origin?.sourceOrigin === "2") {
+        // GBP
+        price = parseFloat(gbpRates[item.id] ?? 0);
+      } else if (origin?.sourceOrigin === "3") {
+        // CAD
+        price = parseFloat(cadRates[item.id] ?? 0);
+      } else if (origin?.sourceOrigin === "0") {
+        // USD
+        price = parseFloat(item.priceUsd ?? 0);
+      } else {
+        // NGN (default)
+        price = parseFloat(item.priceNaira ?? 0);
+      }
 
-    return total + (price * (item.quantity ?? 1));
-  }, 0);
-};
+      return total + (price * (item.quantity ?? 1));
+    }, 0);
+  };
 
   function generateDeliveryFee(): number {
     if (!cartItems.length || !configData.length || !deliveryCountry) return 0;
@@ -204,6 +224,7 @@ const calculateTotal = () => {
       return total + item.quantity * pricePerKg;
     }, 0);
   }
+
 
 
 
@@ -233,26 +254,6 @@ const calculateTotal = () => {
     );
   }
 
-  const validateForm = (phone: any, postalCode: any) => {
-    const phoneRegex = /^\+?[0-9]{7,15}$/;
-    const postalCodeRegex = /^[A-Za-z0-9\s-]{4,10}$/;
-
-    let errors: any = {};
-
-    // Phone validation
-    if (!phoneRegex.test(phone)) {
-      errors.phone = "Please enter a valid phone number (7–15 digits, optional +).";
-    }
-
-    // Postal code validation
-    if (origin?.sourceOrigin === "0") {
-      if (!postalCodeRegex.test(postalCode)) {
-        errors.postalCode = "Please enter a valid postal code (4–10 characters, letters/numbers only).";
-      }
-    }
-
-    return errors;
-  };
 
 
 
@@ -275,44 +276,20 @@ const calculateTotal = () => {
     }
   }
 
-  const validateAddressString = (address, postalCode, countryinputed) => {
-    if (!address || typeof address !== "string") {
-      return { valid: false, message: "Address must be a string", country: null };
-    }
+  const convetCADTOUSD = async (amt: any) => {
+    const fromCAD = await convertToUSD(amt, "CAD");
+    return fromCAD;
+  }
 
-    const lowerAddress = address.toLowerCase();
+  const convetGBPTOUSD = async (amt: any) => {
+    const fromGBP = await convertToUSD(amt, "GBP");
+    return fromGBP
 
-    // Check for "street"
-    const hasStreet = lowerAddress.includes("street");
 
-    // Country list (normalize to lowercase for matching)
-    const countries = ["Nigeria", "USA", "Canada", "United States", "UK"];
+  }
 
-    // Find actual matched country (case-insensitive)
-    const matchedCountry = countries.find(country =>
-      countryinputed?.toLowerCase().includes(country.toLowerCase())
-    );
 
-    // ✅ If no country match at all
-    if (!matchedCountry) {
-      return {
-        valid: false,
-        message: "Address not supported for delivery",
-        country: null
-      };
-    }
 
-    // ✅ If country exists, check rest
-    if (countries) {
-      return { valid: true, message: "Valid address", country: matchedCountry };
-    } else {
-      return {
-        valid: false,
-        message: `Invalid address: missing Country`,
-        country: matchedCountry
-      };
-    }
-  };
 
 
 
@@ -320,67 +297,6 @@ const calculateTotal = () => {
     setOpenPaymentDetails(true)
   }
 
-
-  const validateAddress = (address: string, postalCode: string, country: string) => {
-    if (!address) {
-      setStatus("Input valid delivery address");
-      setAddressInvalid(true);
-      setValidAddress(true);
-      return;
-    }
-
-    const result = validateAddressString(address, postalCode, country);
-    setDeliveryCountry(result.country);
-    setAcceptValid(result.valid);
-    setStatus(result.message);
-    toast({
-      title: "Checkout",
-      description: result.message,
-      variant: "destructive",
-
-    });
-    setAddressInvalid(true);
-    setValidAddress(true);
-
-    if (result.valid) {
-      const cont = origin?.sourceOrigin === "1" ? "Nigeria" : "Others";
-
-      if (origin?.sourceOrigin === "1") {
-        if (country.toLowerCase().includes(cont.toLowerCase())) {
-          setStatus(`✅ ${address}`);
-          toast({
-            title: "Checkout",
-            description: `✅ ${address}`,
-          });
-          setValidAddress(false);
-          setOpenCardDetails(true)
-          setOpenPaymentDetails(false)
-          setAddressInvalid(false);
-        } else {
-          setStatus("Shopping Location does not match provided address");
-          toast({
-            title: "Checkout",
-            description: "Shopping Location does not match provided address",
-            variant: "destructive",
-          });
-          setAddressInvalid(true);
-          setValidAddress(true);
-        }
-      } else {
-        setStatus(`✅ ${address}`);
-        toast({
-          title: "Checkout",
-          description: `✅ ${address}`,
-
-
-        });
-        setValidAddress(false);
-        setOpenPaymentDetails(false)
-        setOpenCardDetails(true)
-        setAddressInvalid(false);
-      }
-    }
-  };
 
 
   const address = sessionStorage?.getItem('4mttoken') ? formData?.deliveryAddress : guestData?.deliveryAddress;
@@ -400,6 +316,14 @@ const calculateTotal = () => {
     return grandTotal
   };
 
+
+  const totalPayableVal = calculateGrandTotal();
+  const { converted, loading } = useCurrencyConvert(
+    totalPayableVal,
+    origin?.sourceOrigin === "2" ? "GBP"
+      : origin?.sourceOrigin === "3" ? "CAD"
+        : null
+  );
 
 
   const handleGuestPay = async (e) => {
@@ -431,8 +355,8 @@ const calculateTotal = () => {
 
       })),
       totalSub: calculateTotal(),
-      totalAmt: calculateGrandTotal(),
-      paymentType: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
+      totalAmt: origin?.sourceOrigin === "0" ? calculateGrandTotal() : origin?.sourceOrigin === "1" ? calculateGrandTotal() : converted,
+      paymentType: origin?.sourceOrigin !== "1" ? 'USD' : 'NGN',
     }
     try {
       const result = await paymentService.initiate(data);
@@ -501,9 +425,9 @@ const calculateTotal = () => {
         qty: d?.quantity,
         subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : d?.priceNaira),
       })),
-      totalAmt: calculateGrandTotal(),
+      totalAmt: origin?.sourceOrigin === "0" ? calculateGrandTotal() : origin?.sourceOrigin === "1" ? calculateGrandTotal() : converted,
       totalSub: calculateTotal(),
-      paymentType: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
+      paymentType: origin?.sourceOrigin !== "1" ? 'USD' : 'NGN',
       deliveryCost: generateDeliveryFee()
     }
     try {
@@ -534,60 +458,13 @@ const calculateTotal = () => {
     }
   };
 
-  const handleAddressValidation = (e: React.FormEvent) => {
-    e?.preventDefault()
-    const errors = validateForm(formData.phone, formData?.postalCode);
-    if (Object.keys(errors).length > 0) {
-      if (errors.phone) toast({
-        title: "Checkout",
-        description: errors?.phone,
-        variant: "destructive",
-      });
-      if (origin?.sourceOrigin === "0") {
-        if (errors.postalCode) toast({
-          title: "Checkout",
-          description: errors?.postalCode,
-          variant: "destructive",
-        });
-      }
-
-      return; // stop submission
-    }
-
-    if (address && country && postalcode) {
-      validateAddress(address, postalcode, country);
-    }
-  }
 
 
-  const handleAddressValidationGuest = (e: React.FormEvent) => {
-    e?.preventDefault()
-    const errors = validateForm(guestData.phone, guestData?.postalCode);
 
-    console.log(errors)
 
-    if (Object.keys(errors).length > 0) {
 
-      if (errors.phone) toast({
-        title: "Checkout",
-        description: errors?.phone,
-        variant: "destructive",
-      });
-      if (origin?.sourceOrigin === "0") {
-        if (errors.postalCode) toast({
-          title: "Checkout",
-          description: errors?.postalCode,
-          variant: "destructive",
-        });
-      }
 
-      return; // stop submission
-    }
 
-    if (address && country) {
-      validateAddress(address, postalcode, country);
-    }
-  }
 
 
 
@@ -746,7 +623,13 @@ const calculateTotal = () => {
                         <DialogTitle className="text-xl font-bold">Delivery Information </DialogTitle>
                       </DialogHeader>
                       {sessionStorage?.getItem('4mttoken') ?
-                        <form onSubmit={handleAddressValidation} className="space-y-6">
+                        <form onSubmit={(e) => {
+                          e.preventDefault()
+                          if (!userAddressInfo) {
+                            return;
+                          }
+                          setOpenCardDetails(true)
+                        }} className="space-y-6">
 
                           <div>
                             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
@@ -800,89 +683,26 @@ const calculateTotal = () => {
 
                             </div>
                           </div>
-                          <div>
+                          <div className="pb-3">
                             <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
                               Delivery Address
                             </label>
-                            <Input
-                              id="deliveryAddress"
-                              name="deliveryAddress"
-                              type={"text"}
-                              value={formData.deliveryAddress}
-                              onChange={handleInputChange}
-                              required
-                              className="w-full pr-12"
-                              placeholder={origin?.sourceOrigin === "0" ? "2212 Bellewood street Dart,North Carolina, USA" : "100024 Greg coker street,Ikeja, Lagos Nigeria"}
+                            <Location
+
+                              setAddress={setUserAddress}
+                              setCity={setUserCity}
+                              setState={setUserState}
+                              setPostal={setUserPostal}
+                              setLocationInfo={setUserLocationInfo}
+                              register={register}
+                              control={control}
+                              errors={errors}
+                              watch={watch}
+                              setValue={setValue}
+                              reset={reset}
+                              country={origin?.sourceOrigin === "0" ? 'us' : origin?.sourceOrigin === "2" ? 'gb' : origin?.sourceOrigin === "3" ? 'ca' : 'ng'}
                             />
 
-                          </div>
-                          {origin?.sourceOrigin === "0" &&
-                            <div>
-                              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                                Postal Code
-                              </label>
-                              <div className="relative">
-                                <Input
-                                  id="postalCode"
-                                  name="postalCode"
-                                  type={"text"}
-                                  value={formData.postalCode}
-                                  onChange={handleInputChange}
-                                  required
-                                  className="w-full pr-12"
-                                  placeholder="Postal Code"
-                                />
-
-                              </div>
-                            </div>}
-                          <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                              Country
-                            </label>
-                            <div className="relative">
-                              {origin?.sourceOrigin === "0" ?
-                                <div className="relative">
-                                  <Select
-                                    value={formData.country}
-                                    onValueChange={(value) => setFormData({ ...formData, country: value })}
-                                    required
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select a country" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {['USA', 'CANADA', 'UK']?.map((cont) => (
-                                        <SelectItem key={cont} value={cont}>
-                                          {cont}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-
-                                </div> :
-                                <div>
-                                  <div className="relative">
-                                    <Select
-                                      value={formData.country}
-                                      onValueChange={(value) => setFormData({ ...formData, country: value })}
-                                      required
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select a country" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {['NIGERIA']?.map((cont) => (
-                                          <SelectItem key={cont} value={cont}>
-                                            {cont}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-
-                                  </div>
-                                </div>}
-
-                            </div>
                           </div>
 
 
@@ -897,7 +717,13 @@ const calculateTotal = () => {
                           {guestForm ?
                             <div>
 
-                              <form onSubmit={handleAddressValidationGuest} className="space-y-6">
+                              <form onSubmit={(e) => {
+                                e.preventDefault()
+                                if (!guestAddressInfo) {
+                                  return;
+                                }
+                                setOpenCardDetails(true)
+                              }} className="space-y-6">
                                 <div>
                                   <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                                     Full Name
@@ -950,86 +776,30 @@ const calculateTotal = () => {
 
                                   </div>
                                 </div>
-                                <div>
+                                <div className="pb-3">
                                   <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
                                     Delivery Address
                                   </label>
-                                  <Input
-                                    id="deliveryAddress"
-                                    name="deliveryAddress"
-                                    type={"text"}
-                                    value={guestData.deliveryAddress}
-                                    onChange={handleInputChangeGuest}
-                                    required
-                                    className="w-full pr-12"
-                                    placeholder={origin?.sourceOrigin === "0" ? "2212 Bellewood street Dart,North Carolina, USA" : "100024 Greg coker street,Ikeja, Lagos Nigeria"}
+                                  <Location
+                                    setAddress={setGuestAddress}
+                                    setCity={setGuestCity}
+                                    setState={setGuestState}
+                                    setPostal={setGuestPostal}
+                                    setLocationInfo={setGuestLocationIngo}
+                                    register={register}
+                                    control={control}
+                                    errors={errors}
+                                    watch={watch}
+                                    setValue={setValue}
+                                    reset={reset}
+                                    country={origin?.sourceOrigin === "0" ? 'us' : origin?.sourceOrigin === "2" ? 'gb' : origin?.sourceOrigin === "3" ? 'ca' : 'ng'}
+
                                   />
 
-                                </div>
-                                {origin?.sourceOrigin === '0' &&
-                                  <div>
-                                    <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                                      Postal Code
-                                    </label>
-                                    <div className="relative">
-                                      <Input
-                                        id="postalCode"
-                                        name="postalCode"
-                                        type={"text"}
-                                        value={guestData.postalCode}
-                                        onChange={handleInputChangeGuest}
-                                        className="w-full pr-12"
-                                        required
-                                        placeholder="Postal Code"
-                                      />
-                                    </div>
-                                  </div>}
-                                <div>
-                                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                                    Country
-                                  </label>
-                                  {origin?.sourceOrigin === "0" ?
-                                    <div className="relative">
-                                      <Select
-                                        value={guestData.country}
-                                        onValueChange={(value) => setGuestData({ ...guestData, country: value })}
-                                        required
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select a country" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {['USA', 'CANADA', 'UK']?.map((cont) => (
-                                            <SelectItem key={cont} value={cont}>
-                                              {cont}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
 
-                                    </div> :
-                                    <div>
-                                      <div className="relative">
-                                        <Select
-                                          value={guestData.country}
-                                          onValueChange={(value) => setGuestData({ ...guestData, country: value })}
-                                          required
-                                        >
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select a country" />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            {['NIGERIA']?.map((cont) => (
-                                              <SelectItem key={cont} value={cont}>
-                                                {cont}
-                                              </SelectItem>
-                                            ))}
-                                          </SelectContent>
-                                        </Select>
-
-                                      </div>
-                                    </div>}
                                 </div>
+
+
 
 
                                 <div>
@@ -1136,26 +906,40 @@ const calculateTotal = () => {
             <div className="flex justify-between mb-3">
               <h4 className="">Cart Subtotal Amount</h4>
               <h4 className="font-medium text-green-600">
-                {formatCurrency(calculateTotal(), country !== 'NIGERIA' ? "USD" : "NGN")}
+                {formatCurrency(calculateTotal(), origin?.sourceOrigin === '0' ? "USD" : origin?.sourceOrigin === '1' ? "NGN" : origin?.sourceOrigin === '2' ? 'GBP' : 'CAD')}
               </h4>
             </div>
             <div className="flex justify-between mb-3">
               <h4 className="">Delivery Cost</h4>
               <h4 className="font-medium text-green-600">
-                {formatCurrency(generateDeliveryFee(), country !== 'NIGERIA' ? "USD" : "NGN")}
+                {formatCurrency(generateDeliveryFee(), origin?.sourceOrigin === '0' ? "USD" : origin?.sourceOrigin === '1' ? "NGN" : origin?.sourceOrigin === '2' ? 'GBP' : 'CAD')}
               </h4>
             </div>
             <div className="flex justify-between mb-3">
               <h4 className="">Grand Total</h4>
               <h4 className="font-medium text-green-600">
-                {formatCurrency(calculateGrandTotal(), country !== 'NIGERIA' ? "USD" : "NGN")}
+                {formatCurrency(calculateGrandTotal(), origin?.sourceOrigin === '0' ? "USD" : origin?.sourceOrigin === '1' ? "NGN" : origin?.sourceOrigin === '2' ? 'GBP' : 'CAD')}
               </h4>
             </div>
             <div className="flex justify-between">
-              <h4 className="">Payable Amount </h4>
-              <h4 className="font-medium text-green-600">
-                {formatCurrency(calculateGrandTotal(), country !== 'NIGERIA' ? "USD" : "NGN")}
-              </h4>
+              <h4 className="">Payable Amount - Only ($) Accepted </h4>
+              {origin?.sourceOrigin === "0" &&
+                <h4 className="font-medium text-green-600">
+                  {formatCurrency(calculateGrandTotal(), 'USD')}
+                </h4>}
+              {origin?.sourceOrigin === "1" &&
+                <h4 className="font-medium text-green-600">
+                  {formatCurrency(calculateGrandTotal(), 'NGN')}
+                </h4>}
+              {origin?.sourceOrigin === "2" &&
+                <h4 className="font-medium text-green-600">
+                  ${converted}
+                </h4>}
+
+              {origin?.sourceOrigin === "3" &&
+                <h4 className="font-medium text-green-600">
+                  ${converted}
+                </h4>}
             </div>
           </div>
         </div>

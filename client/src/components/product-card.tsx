@@ -53,13 +53,13 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
 
   const rateFuncCanadian = async (amt) => {
     const ratesCAD = await convertToCAD(amt);
-    return ratesCAD;
+    return ratesCAD?.cad;
 
   }
 
   const rateFuncGBP = async (amt) => {
     const ratesGBP = await convertToGBP(amt);
-    return ratesGBP;
+    return ratesGBP?.gbp;
 
   }
 

@@ -25,6 +25,7 @@ import ProductCategory from "@/pages/product-by-categories"
 import GuestOrder from "@/pages/guest-order"
 import TrackOrder from "@/pages/track-order"
 import StoreLocations from "@/pages/stores"
+import Test from "./pages/test"
 import 'animate.css';
 
 // Cart Context
@@ -100,6 +101,7 @@ function Router() {
       <Route path="/products-category" component={ProductCategory} />
       <Route path="/track-order" component={TrackOrder} />
       <Route path="/store-locations" component={StoreLocations} />
+      <Route path="/test" component={Test} />
 
       
       <Route path="/support" component={Support} />

@@ -5,28 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/**
- * Real-Time Currency Converter — USD to CAD & GBP
- * Powered by: https://www.frankfurter.app (free, no API key needed)
- *
- * Functions:
- *  - getExchangeRates()    → fetch live USD → CAD & GBP rates
- *  - convertUSD(amount)    → convert a USD amount to both CAD and GBP
- *  - convertToCAD(amount)  → convert USD to CAD only
- *  - convertToGBP(amount)  → convert USD to GBP only
- */
-
-const BASE_URL = "https://api.frankfurter.app";
+const BASE_URL = "https://api.frankfurter.dev/v2";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface FrankfurterResponse {
+interface FrankfurterV2Rate {
   base: string;
+  quote: string;
   date: string;
-  rates: {
-    CAD: number;
-    GBP: number;
-  };
+  rate: number;
 }
 
 export interface ExchangeRates {
@@ -61,32 +48,40 @@ export interface ConvertToGBPResult {
   timestamp: string;
 }
 
+export interface ConvertToUSDResult {
+  amount: number;
+  currency: "CAD" | "GBP";
+  usd: number;
+  rate: number;
+  timestamp: string;
+}
+
 // ─── Functions ────────────────────────────────────────────────────────────────
 
-/**
- * Fetches the latest exchange rates from USD to CAD and GBP.
- */
 export async function getExchangeRates(): Promise<ExchangeRates> {
-  const response = await fetch(`${BASE_URL}/latest?from=USD&to=CAD,GBP`);
+  const response = await fetch(`${BASE_URL}/rates?base=USD&quotes=CAD,GBP`);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch rates: ${response.status} ${response.statusText}`);
   }
 
-  const data: FrankfurterResponse = await response.json();
+  const data: FrankfurterV2Rate[] = await response.json();
+
+  const cadEntry = data.find((r) => r.quote === "CAD");
+  const gbpEntry = data.find((r) => r.quote === "GBP");
+
+  if (!cadEntry || !gbpEntry) {
+    throw new Error("Missing CAD or GBP rate in response.");
+  }
 
   return {
-    base: data.base,
-    USD_to_CAD: data.rates.CAD,
-    USD_to_GBP: data.rates.GBP,
-    timestamp: data.date,
+    base: cadEntry.base,
+    USD_to_CAD: cadEntry.rate,
+    USD_to_GBP: gbpEntry.rate,
+    timestamp: cadEntry.date,
   };
 }
 
-/**
- * Converts a USD amount to both CAD and GBP.
- * @param usdAmount - The amount in USD to convert. Must be a non-negative number.
- */
 export async function convertUSD(usdAmount: number): Promise<ConvertUSDResult> {
   if (isNaN(usdAmount) || usdAmount < 0) {
     throw new Error("Invalid amount: must be a non-negative number.");
@@ -98,18 +93,11 @@ export async function convertUSD(usdAmount: number): Promise<ConvertUSDResult> {
     usd: usdAmount,
     cad: parseFloat((usdAmount * USD_to_CAD).toFixed(2)),
     gbp: parseFloat((usdAmount * USD_to_GBP).toFixed(2)),
-    rates: {
-      USD_to_CAD,
-      USD_to_GBP,
-    },
+    rates: { USD_to_CAD, USD_to_GBP },
     timestamp,
   };
 }
 
-/**
- * Converts a USD amount to Canadian Dollars (CAD) only.
- * @param usdAmount - The amount in USD to convert.
- */
 export async function convertToCAD(usdAmount: number): Promise<ConvertToCADResult> {
   if (isNaN(usdAmount) || usdAmount < 0) {
     throw new Error("Invalid amount: must be a non-negative number.");
@@ -117,14 +105,14 @@ export async function convertToCAD(usdAmount: number): Promise<ConvertToCADResul
 
   const { USD_to_CAD, timestamp } = await getExchangeRates();
 
-  return parseFloat((usdAmount * USD_to_CAD).toFixed(2));
-  
+  return {
+    usd: usdAmount,
+    cad: parseFloat((usdAmount * USD_to_CAD).toFixed(2)),
+    rate: USD_to_CAD,
+    timestamp,
+  };
 }
 
-/**
- * Converts a USD amount to British Pounds (GBP) only.
- * @param usdAmount - The amount in USD to convert.
- */
 export async function convertToGBP(usdAmount: number): Promise<ConvertToGBPResult> {
   if (isNaN(usdAmount) || usdAmount < 0) {
     throw new Error("Invalid amount: must be a non-negative number.");
@@ -132,33 +120,68 @@ export async function convertToGBP(usdAmount: number): Promise<ConvertToGBPResul
 
   const { USD_to_GBP, timestamp } = await getExchangeRates();
 
-  return parseFloat((usdAmount * USD_to_GBP).toFixed(2));
-    
+  return {
+    usd: usdAmount,
+    gbp: parseFloat((usdAmount * USD_to_GBP).toFixed(2)),
+    rate: USD_to_GBP,
+    timestamp,
+  };
 }
 
-// ─── Example usage ────────────────────────────────────────────────────────────
-
-(async () => {
-  try {
-    const amount = 100;
-
-    console.log("=== Real-Time Currency Converter ===\n");
-
-    const result: ConvertUSDResult = await convertUSD(amount);
-    console.log(`$${result.usd} USD =`);
-    console.log(`  $${result.cad} CAD  (rate: ${result.rates.USD_to_CAD})`);
-    console.log(`  £${result.gbp} GBP  (rate: ${result.rates.USD_to_GBP})`);
-    console.log(`  Rate date: ${result.timestamp}\n`);
-
-    const cadOnly: ConvertToCADResult = await convertToCAD(250);
-    console.log(`$${cadOnly.usd} USD → $${cadOnly.cad} CAD`);
-
-    const gbpOnly: ConvertToGBPResult = await convertToGBP(500);
-    console.log(`$${gbpOnly.usd} USD → £${gbpOnly.gbp} GBP`);
-
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error("Error:", err.message);
-    }
+export async function convertToUSD(
+  amount: number,
+  fromCurrency: "CAD" | "GBP"
+): Promise<ConvertToUSDResult> {
+  if (isNaN(amount) || amount < 0) {
+    throw new Error("Invalid amount: must be a non-negative number.");
   }
-})();
+
+  const { USD_to_CAD, USD_to_GBP, timestamp } = await getExchangeRates();
+
+  const rateMap: Record<"CAD" | "GBP", number> = {
+    CAD: USD_to_CAD,
+    GBP: USD_to_GBP,
+  };
+
+  const rate = rateMap[fromCurrency];
+
+  return {
+    amount,
+    currency: fromCurrency,
+    usd: parseFloat((amount / rate).toFixed(2)),
+    rate,
+    timestamp,
+  };
+}
+
+export async function convertGBPtoUSD(gbpAmount: number): Promise<ConvertToUSDResult> {
+  if (isNaN(gbpAmount) || gbpAmount < 0) {
+    throw new Error("Invalid amount: must be a non-negative number.");
+  }
+
+  const { USD_to_GBP, timestamp } = await getExchangeRates();
+
+  return {
+    amount: gbpAmount,
+    currency: "GBP",
+    usd: parseFloat((gbpAmount / USD_to_GBP).toFixed(2)),
+    rate: USD_to_GBP,
+    timestamp,
+  };
+}
+
+export async function convertCADtoUSD(cadAmount: number): Promise<ConvertToUSDResult> {
+  if (isNaN(cadAmount) || cadAmount < 0) {
+    throw new Error("Invalid amount: must be a non-negative number.");
+  }
+
+  const { USD_to_CAD, timestamp } = await getExchangeRates();
+
+  return {
+    amount: cadAmount,
+    currency: "CAD",
+    usd: parseFloat((cadAmount / USD_to_CAD).toFixed(2)),
+    rate: USD_to_CAD,
+    timestamp,
+  };
+}
