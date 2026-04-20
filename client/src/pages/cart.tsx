@@ -499,7 +499,15 @@ export default function Cart() {
                           <h3 className="font-semibold text-slate-900 text-sm sm:text-base">{item.name}</h3>
                           {origin?.sourceOrigin !== "" &&
                             <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
-                              {origin?.sourceOrigin === "1" ? '₦' : '$'}{origin?.sourceOrigin === "1" ? item?.priceNaira : item.priceUsd} each
+                              {
+                            origin?.sourceOrigin === "2"
+                              ? `GBP ${(parseFloat(gbpRates[item.id])).toLocaleString()}`
+                              : origin?.sourceOrigin === "3"
+                                ? `CAD ${(parseFloat(cadRates[item.id])).toLocaleString()}`
+                                : origin?.sourceOrigin === "0"
+                                  ? `$${(parseFloat(item.priceUsd)).toLocaleString()}`
+                                  : `₦${(parseFloat(item.priceNaira)).toLocaleString()}`
+                          } each
                             </p>}
                           <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
                             MOQ: {item?.moq}
