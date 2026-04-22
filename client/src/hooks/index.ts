@@ -14,11 +14,12 @@ export const getUserCountry = async (): Promise<string | null> => {
       countryPromise = fetch("https://ipapi.co/json/")
         .then((res) => res.json())
         .then((data) => {
-            console.log(data)
+          console.log(data);
           const country: string | null = data?.country ?? null;
-
-    
-
+          if (country) {
+            localStorage.setItem("user_country", country);
+            localStorage.setItem("country_time", String(Date.now()));
+          }
           return country;
         })
         .catch((err) => {

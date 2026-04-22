@@ -10,14 +10,38 @@ import { useCart } from '../context/cartContext';
 import { GlobalStateContext } from "../context/globalContext";
 import { useUserCountry } from "@/hooks/useCountryLocatiom";
 
+const GEO_BOOTSTRAP_KEY = "4m_geo_bootstrap";
+
+const SOURCE_BY_COUNTRY: Record<string, string> = {
+  US: "0",
+  NG: "1",
+  GB: "2",
+  CA: "3",
+};
+
+function isSupportedRegion(code: string | null): code is keyof typeof SOURCE_BY_COUNTRY {
+  return code !== null && code in SOURCE_BY_COUNTRY;
+}
+
+function getInitialDefaultModalOpen(): boolean {
+  try {
+    const stored = localStorage.getItem("origin");
+    if (!stored) return true;
+    const o = JSON.parse(stored) as { sourceOrigin?: string };
+    return o?.sourceOrigin === "" || o?.sourceOrigin == null;
+  } catch {
+    return true;
+  }
+}
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useLocation();
   const { origin, setOrigin } = useContext(GlobalStateContext);
-  const [defaultModal, setDefaultModal] = useState(true)
-  const actalUsercountry = localStorage?.getItem('user_country')
+  const [defaultModal, setDefaultModal] = useState(getInitialDefaultModalOpen);
+  const [showRegionPicker, setShowRegionPicker] = useState(false);
 
 
   // Cart item count state - will be connected to real cart later
@@ -50,13 +74,39 @@ export default function Header() {
   const { country, loading } = useUserCountry();
 
   useEffect(() => {
-    if (actalUsercountry)
-    localStorage.setItem("user_country", actalUsercountry);
-    setOrigin((prevState) => ({
-      ...prevState,
-      sourceOrigin: actalUsercountry === "US" ? "0" : actalUsercountry === "NG" ? "1" : actalUsercountry === "CA" ? "3" : actalUsercountry === "GB" ? "2" : "",
+    if (origin.sourceOrigin !== "" && origin.sourceOrigin != null) {
+      setDefaultModal(false);
+    }
+  }, [origin.sourceOrigin]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (localStorage.getItem(GEO_BOOTSTRAP_KEY) === "1") return;
+
+    if (origin.sourceOrigin !== "" && origin.sourceOrigin != null) {
+      localStorage.setItem(GEO_BOOTSTRAP_KEY, "1");
+      return;
+    }
+
+    localStorage.setItem(GEO_BOOTSTRAP_KEY, "1");
+
+    if (isSupportedRegion(country)) {
+      setOrigin((prev) => ({
+        ...prev,
+        sourceOrigin: SOURCE_BY_COUNTRY[country],
+      }));
+      setDefaultModal(false);
+      setShowRegionPicker(false);
+      return;
+    }
+
+    setOrigin((prev) => ({
+      ...prev,
+      sourceOrigin: "0",
     }));
-  }, [actalUsercountry])
+    setDefaultModal(false);
+    setShowRegionPicker(true);
+  }, [loading, country, origin.sourceOrigin, setOrigin]);
 
 
 
@@ -232,10 +282,11 @@ export default function Header() {
 
             <Modal
               title=""
-              open={origin.sourceOrigin === "" ? true : false}
+              open={showRegionPicker || origin.sourceOrigin === ""}
               footer={false}
               width={500}
               maskClosable={false}
+              closable={false}
             >
               <div>
                 <div className="d-flex justify-content-center py-3">
@@ -245,6 +296,11 @@ export default function Header() {
                         Where are you Shopping from ?
                       </h2>
                     </div>
+                    {showRegionPicker && country && !isSupportedRegion(country) && (
+                      <p className="text-center pt-2 text-slate-600 text-sm">
+                        We detected your connection from {country}. The store is set to USD until you select a region below.
+                      </p>
+                    )}
                     <p className="text-center pt-3">Please kindly indicate where you are shopping from so we can serve you well.</p>
                     <br />
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -252,11 +308,11 @@ export default function Header() {
                         type="submit"
                         className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
+                          setShowRegionPicker(false);
                           setOrigin((prevState) => ({
                             ...prevState,
                             sourceOrigin: "0",
                           }));
-
                         }}
                       >
                         USA
@@ -265,11 +321,11 @@ export default function Header() {
                         type="submit"
                         className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
+                          setShowRegionPicker(false);
                           setOrigin((prevState) => ({
                             ...prevState,
                             sourceOrigin: "2",
                           }));
-
                         }}
                       >
                         United Kingdom
@@ -278,11 +334,11 @@ export default function Header() {
                         type="submit"
                         className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
+                          setShowRegionPicker(false);
                           setOrigin((prevState) => ({
                             ...prevState,
                             sourceOrigin: "3",
                           }));
-
                         }}
                       >
                         Canada
@@ -291,13 +347,11 @@ export default function Header() {
                         type="submit"
                         className="w bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
+                          setShowRegionPicker(false);
                           setOrigin((prevState) => ({
                             ...prevState,
                             sourceOrigin: "1",
                           }));
-
-
-
                         }}
                       >
                         Nigeria
@@ -310,12 +364,12 @@ export default function Header() {
 
             <Modal
               title=""
-              open={defaultModal}
+              open={defaultModal && !showRegionPicker}
               footer={false}
               width={500}
               maskClosable={false}
               onCancel={() => {
-                setDefaultModal(false)
+                setDefaultModal(false);
               }}
             >
               <div className="d-flex justify-content-center py-3">
@@ -325,20 +379,32 @@ export default function Header() {
                       Shopping Location
                     </h2>
                   </div>
-                  <p className="text-center pt-3">We can see you are shopping form {country || "Detecting"}</p>
+                  <p className="text-center pt-3">
+                    {loading
+                      ? "Detecting your location…"
+                      : `We can see you are shopping from ${country || "an unknown region"}`}
+                  </p>
 
                   <br />
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Button
                       type="submit"
                       className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+                      disabled={loading}
                       onClick={() => {
-                        setDefaultModal(false)
-                        setOrigin((prevState) => ({
-                          ...prevState,
-                          sourceOrigin: country === "US" ? "0" : country === "NG" ? "1" : country === "CA" ? "3" : country === "GB" ? "2" : "",
-                        }));
-
+                        setDefaultModal(false);
+                        if (isSupportedRegion(country)) {
+                          setOrigin((prevState) => ({
+                            ...prevState,
+                            sourceOrigin: SOURCE_BY_COUNTRY[country],
+                          }));
+                        } else {
+                          setOrigin((prevState) => ({
+                            ...prevState,
+                            sourceOrigin: "0",
+                          }));
+                          setShowRegionPicker(true);
+                        }
                       }}
                     >
                       Confirm Location
@@ -346,13 +412,14 @@ export default function Header() {
                     <Button
                       type="submit"
                       className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
+                      disabled={loading}
                       onClick={() => {
-                        setDefaultModal(false)
+                        setDefaultModal(false);
                         setOrigin((prevState) => ({
                           ...prevState,
                           sourceOrigin: "",
                         }));
-
+                        setShowRegionPicker(false);
                       }}
                     >
                       Change Location
