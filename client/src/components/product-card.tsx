@@ -7,6 +7,22 @@ import { useCart } from '../context/cartContext';
 import { useToast } from "@/hooks/use-toast";
 import { Modal } from "antd";
 import { convertToCAD, convertToGBP } from "../lib/utils"
+
+function formatCurrency(
+  amount: number | string | null | undefined,
+  currency: "USD" | "NGN" | "GBP" | "CAD",
+  locale: string
+): string {
+  if (amount == null) return "…";
+  const value = typeof amount === "string" ? parseFloat(String(amount)) : amount;
+  if (Number.isNaN(value)) return "—";
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+  }).format(value);
+}
+
 interface ProductCardProps {
   product: {
     id: number;
@@ -14,18 +30,20 @@ interface ProductCardProps {
     description: string;
     priceUsd: string;
     priceNgn: string;
+    priceNaira?: string;
     imageUrl?: string;
     rating?: string;
     reviewCount?: number;
     category?: any;
   };
+  origin: string;
 }
 
 export default function ProductCard({ product, origin }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [openCartMsg, setOpenCartMsg] = useState(false)
-  const [amountGbp, setAmountGbp] = useState(null);
-  const [amountCad, setAmountCad] = useState(null);
+  const [amountGbp, setAmountGbp] = useState<number | null>(null);
+  const [amountCad, setAmountCad] = useState<number | null>(null);
   const [location, setLocation] = useLocation();
   const [cartMsg, setCartMsg] = useState("")
   const { addItem, incrementItem, decrementItem, removeItem, state } = useCart();
@@ -77,8 +95,20 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
     loadRates();
   }, [product?.priceUsd]);
 
-
-
+  const displayPrice = (() => {
+    switch (origin) {
+      case "0":
+        return formatCurrency(product.priceUsd, "USD", "en-US");
+      case "2":
+        return formatCurrency(amountGbp, "GBP", "en-GB");
+      case "3":
+        return formatCurrency(amountCad, "CAD", "en-CA");
+      case "1":
+        return formatCurrency(product.priceNaira, "NGN", "en-NG");
+      default:
+        return "";
+    }
+  })();
 
   return (
     <Card className="group hover:shadow-xl hover:shadow-emerald-100 transition-all duration-300 hover:border-emerald-200 cursor-pointer">
@@ -113,15 +143,7 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center space-x-2">
               <span className="text-base sm:text-lg font-bold text-slate-900">
-                {origin === '0'
-                  ? "$" + product.priceUsd
-                  : origin === '2'
-                    ? "GBP " + (amountGbp ?? "...")
-                    : origin === '3'
-                      ? "CA " + (amountCad ?? "...")
-                      : origin === '1'
-                        ? "N" + product.priceNaira
-                        : ""}
+                {displayPrice}
               </span>            </div>
             {product?.stock < 1 ?
               <div style={{ border: '1px solid red', background: 'red', padding: '8px', color: 'white', borderRadius: '10px' }}>
