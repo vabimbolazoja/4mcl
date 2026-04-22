@@ -65,7 +65,7 @@ export default function Cart() {
   const { toast } = useToast();
   const [radioValue, setRadioValue] = useState(1);
   const [configData, setConfigData] = useState<any[]>([]);
-  const cartItems = state?.items;
+  const cartItems = state?.items ?? [];
 
 
   const style = {
@@ -92,7 +92,7 @@ export default function Cart() {
     postalCode: "",
     country: ""
   });
-  const total = state.items.reduce(
+  const total = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
@@ -131,8 +131,6 @@ export default function Cart() {
     const ratesCAD = await convertToCAD(amt);
     return ratesCAD?.cad;
   }
-
-  console.log(rateFuncCanadian(200))
 
   useEffect(() => {
     if (!cartItems?.length) return;
@@ -225,10 +223,21 @@ export default function Cart() {
     }, 0);
   }
 
+  const calculateGrandTotal = (): string | number => {
+    const productTotal = calculateTotal() || 0;
+    const deliveryFee = generateDeliveryFee() || 0;
+    return productTotal + deliveryFee;
+  };
 
+  const totalPayableVal = Number(calculateGrandTotal()) || 0;
+  const { converted, loading } = useCurrencyConvert(
+    totalPayableVal,
+    origin?.sourceOrigin === "2" ? "GBP"
+      : origin?.sourceOrigin === "3" ? "CAD"
+        : null
+  );
 
-
-  if (cartItems.length === 0) {
+  if (!cartItems?.length) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -302,28 +311,6 @@ export default function Cart() {
   const address = sessionStorage?.getItem('4mttoken') ? formData?.deliveryAddress : guestData?.deliveryAddress;
   const postalcode = sessionStorage?.getItem('4mttoken') ? formData?.postalCode : guestData?.postalCode;
   const country = sessionStorage?.getItem('4mttoken') ? formData?.country : guestData?.country;
-
-
-
-
-
-  const calculateGrandTotal = (): string => {
-    const productTotal = calculateTotal() || 0;      // make sure this returns a number
-    const deliveryFee = generateDeliveryFee() || 0;  // make sure this returns a number
-
-    const grandTotal = productTotal + deliveryFee;
-
-    return grandTotal
-  };
-
-
-  const totalPayableVal = calculateGrandTotal();
-  const { converted, loading } = useCurrencyConvert(
-    totalPayableVal,
-    origin?.sourceOrigin === "2" ? "GBP"
-      : origin?.sourceOrigin === "3" ? "CAD"
-        : null
-  );
 
 
   const handleGuestPay = async (e) => {
