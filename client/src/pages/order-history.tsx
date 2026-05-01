@@ -276,7 +276,7 @@ export default function OrderHistory() {
                             </Badge>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            
+
                             {order?.orderStatus === 'DELIVERED' &&
                               <Button
                                 type="submit"
@@ -288,11 +288,11 @@ export default function OrderHistory() {
                               >
                                 Review Order
                               </Button>}
-                              {order?.orderStatus === 'DELIVERED' &&
+                            {order?.orderStatus === 'DELIVERED' &&
                               <p
                                 onClick={() => setOpenReturn(true)}
                                 className="mt-2 text-info pl-4"
-                                style={{ textDecoration: '',fontWeight:'700', color:'blue' }}
+                                style={{ textDecoration: '', fontWeight: '700', color: 'blue' }}
                               >
                                 Return Item
                               </p>}
@@ -358,7 +358,7 @@ export default function OrderHistory() {
                                       </div>
                                       <div className="text-right">
                                         <p className="font-semibold text-slate-900">
-                                          {order.paymentType === 'USD' ? '$' : '₦'}{item.subtotal}
+                                          {order?.paymentType === 'NGN' ? '₦' : order?.paymentType === 'GBP' ? '₤' : order?.paymentType === 'CAD' ? 'C$' : '$'}{item?.subtotal?.toFixed(2)}
                                         </p>
                                         <p className="text-sm text-slate-600">each</p>
                                       </div>
@@ -377,20 +377,24 @@ export default function OrderHistory() {
                                     <div className="flex justify-between">
                                       <span className="text-slate-600">Subtotal</span>
                                       <span className="font-medium">
-                                        {formatCurrency(order?.totalSub, order.paymentType === 'USD' ? "USD" : "NGN")}
+                                        {order?.paymentType === 'NGN' ? '₦' : order?.paymentType === 'GBP' ? '₤' : order?.paymentType === 'CAD' ? 'C$' : '$'}{order?.totalSub?.toFixed(2)}
+
                                       </span>
                                     </div>
                                     <div className="flex justify-between">
                                       <span className="text-slate-600">Delivery Cost</span>
                                       <span className="font-medium">
-                                        {formatCurrency(order?.deliveryCost, order.paymentType === 'USD' ? "USD" : "NGN")}
+                                        {order?.paymentType === 'NGN' ? '₦' : order?.paymentType === 'GBP' ? '₤' : order?.paymentType === 'CAD' ? 'C$' : '$'}{order?.deliveryCost?.toFixed(2)}
+
                                       </span>
                                     </div>
 
                                     <Separator />
                                     <div className="flex justify-between text-lg font-bold">
                                       <span>Grand Total</span>
-                                      <span>  {formatCurrency(order?.totalAmt, order.paymentType === 'USD' ? "USD" : "NGN")}
+                                      <span>
+                                        {order?.paymentType === 'NGN' ? '₦' : order?.paymentType === 'GBP' ? '₤' : order?.paymentType === 'CAD' ? 'C$' : '$'}{order?.totalAmt?.toFixed(2)}
+
                                       </span>
                                     </div>
                                   </div>
@@ -470,7 +474,7 @@ export default function OrderHistory() {
 
                           <div className="text-right">
                             <p className="font-medium text-slate-900">
-                              {formatCurrency(item?.subtotal, order.paymentType === 'USD' ? "USD" : "NGN")}
+                              {order?.paymentType === 'NGN' ? 'N' : order?.paymentType === 'GBP' ? '₤' : order?.paymentType === 'CAD' ? 'C$' : '$'}{item?.subtotal?.toFixed(2)}
 
                             </p>
                           </div>

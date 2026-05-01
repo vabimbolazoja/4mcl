@@ -189,10 +189,10 @@ export default function Cart() {
 
       if (origin?.sourceOrigin === "2") {
         // GBP
-        price = parseFloat(gbpRates[item.id] ?? 0);
+        price = parseFloat(item.priceGbp ?? 0);
       } else if (origin?.sourceOrigin === "3") {
         // CAD
-        price = parseFloat(cadRates[item.id] ?? 0);
+        price = parseFloat(item.priceCanada ?? 0);
       } else if (origin?.sourceOrigin === "0") {
         // USD
         price = parseFloat(item.priceUsd ?? 0);
@@ -323,27 +323,29 @@ export default function Cart() {
       address: guestData?.deliveryAddress ? guestData?.deliveryAddress : "USA",
     }
 
+    console.log(origin?.sourceOrigin)
+
 
 
     const data = {
       deliveryInfo: deliveryInfo,
       user_id: '6895cd9fb97e7a9fe487d6e1',
       user_email: guestData?.email,
-      currency: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
+      currency: origin?.sourceOrigin == "1" ? 'NGN' : 'USD',
       orders: cartItems?.map((d) => ({
         prod_id: d?._id,
         prod_name: d?.name,
         moq: d?.moq,
         image: d?.imageUrls[0],
-        price: currency === 'USD' ? d?.priceUsd : d?.priceNaira,
+        price: origin?.sourceOrigin  === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada,
         qty: d?.quantity,
-        subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : d?.priceNaira),
+        subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada),
         deliveryCost: generateDeliveryFee()
 
       })),
       totalSub: calculateTotal(),
       totalAmt: origin?.sourceOrigin === "0" ? calculateGrandTotal() : origin?.sourceOrigin === "1" ? calculateGrandTotal() : converted,
-      paymentType: origin?.sourceOrigin !== "1" ? 'USD' : 'NGN',
+      paymentType: origin?.sourceOrigin === "1" ? 'NGN' : 'USD',
     }
     try {
       const result = await paymentService.initiate(data);
@@ -402,19 +404,19 @@ export default function Cart() {
       deliveryInfo: deliveryInfo,
       user_id: sessionStorage?.getItem('4mtxxd'),
       user_email: sessionStorage?.getItem('4mtxxm'),
-      currency: origin?.sourceOrigin === "0" ? 'USD' : 'NGN',
+      currency: origin?.sourceOrigin === "1" ? 'NGN' : 'USD',
       orders: cartItems?.map((d) => ({
         prod_id: d?._id,
         prod_name: d?.name,
         moq: d?.moq,
         image: d?.imageUrls[0],
-        price: currency === 'USD' ? d?.priceUsd : d?.priceNaira,
+        price: origin?.sourceOrigin  === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada,
         qty: d?.quantity,
-        subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : d?.priceNaira),
+        subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada),
       })),
       totalAmt: origin?.sourceOrigin === "0" ? calculateGrandTotal() : origin?.sourceOrigin === "1" ? calculateGrandTotal() : converted,
       totalSub: calculateTotal(),
-      paymentType: origin?.sourceOrigin !== "1" ? 'USD' : 'NGN',
+      paymentType: origin?.sourceOrigin === "1" ? 'NGN' : 'USD',
       deliveryCost: generateDeliveryFee()
     }
     try {
@@ -486,15 +488,15 @@ export default function Cart() {
                           <h3 className="font-semibold text-slate-900 text-sm sm:text-base">{item.name}</h3>
                           {origin?.sourceOrigin !== "" &&
                             <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
-                              {
+   {
                             origin?.sourceOrigin === "2"
-                              ? `GBP ${(parseFloat(gbpRates[item.id])).toLocaleString()}`
+                              ? `₤${(parseFloat(item.priceGbp)).toFixed(2)}`
                               : origin?.sourceOrigin === "3"
-                                ? `CAD ${(parseFloat(cadRates[item.id])).toLocaleString()}`
+                                ? `C$${(parseFloat(item.priceCanada)).toFixed(2)}`
                                 : origin?.sourceOrigin === "0"
-                                  ? `$${(parseFloat(item.priceUsd)).toLocaleString()}`
+                                  ? `$${(parseFloat(item.priceUsd)).toFixed(2)}`
                                   : `₦${(parseFloat(item.priceNaira)).toLocaleString()}`
-                          } each
+                          }
                             </p>}
                           <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
                             MOQ: {item?.moq}
@@ -528,9 +530,9 @@ export default function Cart() {
                         <p className="font-bold text-slate-900">
                           {
                             origin?.sourceOrigin === "2"
-                              ? `GBP ${(parseFloat(gbpRates[item.id]) * item.quantity || 0).toFixed(2)}`
+                              ? `₤${(parseFloat(item.priceGbp) * item.quantity).toFixed(2)}`
                               : origin?.sourceOrigin === "3"
-                                ? `CAD ${(parseFloat(cadRates[item.id]) * item.quantity || 0).toFixed(2)}`
+                                ? `C$${(parseFloat(item.priceCanada) * item.quantity).toFixed(2)}`
                                 : origin?.sourceOrigin === "0"
                                   ? `$${(parseFloat(item.priceUsd) * item.quantity).toFixed(2)}`
                                   : `₦${(parseFloat(item.priceNaira) * item.quantity).toLocaleString()}`
@@ -566,28 +568,28 @@ export default function Cart() {
                       size="sm"
                       className="flex-1"
                     >
-                      USD ($)
+                      ($)
                     </Button>
                     <Button
                       variant={origin?.sourceOrigin === "2" ? 'default' : 'outline'}
                       size="sm"
                       className="flex-1"
                     >
-                      GBP (E)
+                      (₤)
                     </Button>
                     <Button
                       variant={origin?.sourceOrigin === "3" ? 'default' : 'outline'}
                       size="sm"
                       className="flex-1"
                     >
-                      CAD (CA)
+                      (C$)
                     </Button>
                     <Button
                       variant={origin?.sourceOrigin === "1" ? 'default' : 'outline'}
                       size="sm"
                       className="flex-1"
                     >
-                      NGN (₦)
+                       (₦)
                     </Button>
                   </div>
                 </div>
@@ -598,7 +600,7 @@ export default function Cart() {
                     <span className="font-medium">
                       {origin?.sourceOrigin === "0"
                         ? `$${calculateTotal().toFixed(2)}`
-                        : origin.sourceOrigin === "2" ? `GBP${calculateTotal().toFixed(2)}` : origin?.sourceOrigin === "3" ? `CAD${calculateTotal().toFixed(2)}` : `₦${calculateTotal().toLocaleString()}`
+                        : origin.sourceOrigin === "2" ? `₤${calculateTotal().toFixed(2)}` : origin?.sourceOrigin === "3" ? `C$${calculateTotal().toFixed(2)}` : `₦${calculateTotal().toLocaleString()}`
                       }
                     </span>
                   </div>

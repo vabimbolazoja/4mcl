@@ -132,6 +132,8 @@ export default function ProductDetail() {
       </div>
     );
   }
+
+  console.log(product)
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -236,7 +238,7 @@ export default function ProductDetail() {
               <div className="mb-6">
 
                 <div className="text-3xl font-bold text-slate-900">
-                  {origin?.sourceOrigin === '0' ? `$${product.priceUsd}` : origin?.sourceOrigin === '1' ? `₦${product.priceNaira}` : "NA"}
+                {origin?.sourceOrigin === '1' ? '₦' : origin?.sourceOrigin === '2' ? '₤' : origin?.sourceOrigin === '3' ? 'C$' : '$'}{origin?.sourceOrigin === "0" ? product.priceUsd : origin?.sourceOrigin === "1" ? product?.priceNaira : origin?.sourceOrigin === "2" ? product?.priceGbp : product?.priceCanada}
                 </div>
                 <p className="text-slate-600 mt-1"> MOQ: {product.moq}</p>
               </div>

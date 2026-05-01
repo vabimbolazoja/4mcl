@@ -69,46 +69,9 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
     }
   }
 
-  const rateFuncCanadian = async (amt) => {
-    const ratesCAD = await convertToCAD(amt);
-    return ratesCAD?.cad;
 
-  }
+  console.log(product)
 
-  const rateFuncGBP = async (amt) => {
-    const ratesGBP = await convertToGBP(amt);
-    return ratesGBP?.gbp;
-
-  }
-
-  useEffect(() => {
-    if (!product?.priceUsd) return;
-
-    const loadRates = async () => {
-      const gbp = await rateFuncGBP(product.priceUsd);
-      const cad = await rateFuncCanadian(product.priceUsd);
-
-      setAmountGbp(gbp);
-      setAmountCad(cad);
-    };
-
-    loadRates();
-  }, [product?.priceUsd]);
-
-  const displayPrice = (() => {
-    switch (origin) {
-      case "0":
-        return formatCurrency(product.priceUsd, "USD", "en-US");
-      case "2":
-        return formatCurrency(amountGbp, "GBP", "en-GB");
-      case "3":
-        return formatCurrency(amountCad, "CAD", "en-CA");
-      case "1":
-        return formatCurrency(product.priceNaira, "NGN", "en-NG");
-      default:
-        return "";
-    }
-  })();
 
   return (
     <Card className="group hover:shadow-xl hover:shadow-emerald-100 transition-all duration-300 hover:border-emerald-200 cursor-pointer">
@@ -143,7 +106,7 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center space-x-2">
               <span className="text-base sm:text-lg font-bold text-slate-900">
-                {displayPrice}
+                {origin === '1' ? '₦' : origin === '2' ? '₤' : origin === '3' ? 'C$' : '$'}{origin === "0" ? product.priceUsd?.toLocaleString() : origin === "1" ? product?.priceNaira?.toLocaleString() : origin === "2" ? product?.priceGbp?.toLocaleString() : product?.priceCanada?.toLocaleString()}
               </span>            </div>
             {product?.stock < 1 ?
               <div style={{ border: '1px solid red', background: 'red', padding: '8px', color: 'white', borderRadius: '10px' }}>
