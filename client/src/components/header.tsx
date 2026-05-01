@@ -39,7 +39,7 @@ export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useLocation();
-  const { origin, setOrigin } = useContext(GlobalStateContext);
+  const { origin, setOrigin } = useContext(GlobalStateContext)!;
   const [defaultModal, setDefaultModal] = useState(getInitialDefaultModalOpen);
   const [showRegionPicker, setShowRegionPicker] = useState(false);
 
@@ -91,7 +91,7 @@ export default function Header() {
     localStorage.setItem(GEO_BOOTSTRAP_KEY, "1");
 
     if (isSupportedRegion(country)) {
-      setOrigin((prev) => ({
+      setOrigin((prev: any) => ({
         ...prev,
         sourceOrigin: SOURCE_BY_COUNTRY[country],
       }));
@@ -100,12 +100,10 @@ export default function Header() {
       return;
     }
 
-    setOrigin((prev) => ({
-      ...prev,
-      sourceOrigin: "0",
-    }));
-    setDefaultModal(false);
-    setShowRegionPicker(true);
+    // Unsupported region: keep the user on the default modal so they can
+    // either confirm (USD/"0") or choose a supported shopping location.
+    setDefaultModal(true);
+    setShowRegionPicker(false);
   }, [loading, country, origin.sourceOrigin, setOrigin]);
 
 
@@ -138,10 +136,8 @@ export default function Header() {
               ) : (
                 <div>
                   {item?.href === 'shop-location' ? <div onClick={() => {
-                    setOrigin((prevState) => ({
-                      ...prevState,
-                      sourceOrigin: ""
-                    }));
+                    setDefaultModal(false);
+                    setShowRegionPicker(true);
                   }}
 
                   > {item?.label}</div> :
@@ -222,10 +218,9 @@ export default function Header() {
 
                       <div>
                         {item?.href === 'shop-location' ? <div onClick={() => {
-                          setOrigin((prevState) => ({
-                            ...prevState,
-                            sourceOrigin: ""
-                          }));
+                          setDefaultModal(false);
+                          setShowRegionPicker(true);
+                          setIsMenuOpen(false);
                         }}
 
                         > {item?.label}</div> :
@@ -282,7 +277,7 @@ export default function Header() {
 
             <Modal
               title=""
-              open={showRegionPicker || origin.sourceOrigin === ""}
+              open={showRegionPicker}
               footer={false}
               width={500}
               maskClosable={false}
@@ -309,7 +304,7 @@ export default function Header() {
                         className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
                           setShowRegionPicker(false);
-                          setOrigin((prevState) => ({
+                    setOrigin((prevState: any) => ({
                             ...prevState,
                             sourceOrigin: "0",
                           }));
@@ -322,7 +317,7 @@ export default function Header() {
                         className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
                           setShowRegionPicker(false);
-                          setOrigin((prevState) => ({
+                          setOrigin((prevState: any) => ({
                             ...prevState,
                             sourceOrigin: "2",
                           }));
@@ -335,7 +330,7 @@ export default function Header() {
                         className=" bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
                           setShowRegionPicker(false);
-                          setOrigin((prevState) => ({
+                          setOrigin((prevState: any) => ({
                             ...prevState,
                             sourceOrigin: "3",
                           }));
@@ -348,7 +343,7 @@ export default function Header() {
                         className="w bg-emerald-600 text-white hover:bg-emerald-700 py-3 font-semibold shadow-lg"
                         onClick={() => {
                           setShowRegionPicker(false);
-                          setOrigin((prevState) => ({
+                          setOrigin((prevState: any) => ({
                             ...prevState,
                             sourceOrigin: "1",
                           }));
@@ -382,7 +377,9 @@ export default function Header() {
                   <p className="text-center pt-3">
                     {loading
                       ? "Detecting your location…"
-                      : `We can see you are shopping from ${country || "an unknown region"}`}
+                      : !isSupportedRegion(country)
+                        ? `We noticed you are shopping from ${country || "an unknown region"}. However, we don't support delivery in ${country || "this country"} except Nigeria, Canada, United State and United kingdom.`
+                        : `We can see you are shopping from ${country || "an unknown region"}`}
                   </p>
 
                   <br />
@@ -394,16 +391,16 @@ export default function Header() {
                       onClick={() => {
                         setDefaultModal(false);
                         if (isSupportedRegion(country)) {
-                          setOrigin((prevState) => ({
+                          setOrigin((prevState: any) => ({
                             ...prevState,
                             sourceOrigin: SOURCE_BY_COUNTRY[country],
                           }));
                         } else {
-                          setOrigin((prevState) => ({
+                          setOrigin((prevState: any) => ({
                             ...prevState,
                             sourceOrigin: "0",
                           }));
-                          setShowRegionPicker(true);
+                          setShowRegionPicker(false);
                         }
                       }}
                     >
@@ -415,11 +412,7 @@ export default function Header() {
                       disabled={loading}
                       onClick={() => {
                         setDefaultModal(false);
-                        setOrigin((prevState) => ({
-                          ...prevState,
-                          sourceOrigin: "",
-                        }));
-                        setShowRegionPicker(false);
+                        setShowRegionPicker(true);
                       }}
                     >
                       Change Location
