@@ -39,7 +39,7 @@ export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useLocation();
-  const { origin, setOrigin } = useContext(GlobalStateContext)!;
+  const { origin, setOrigin } = (useContext(GlobalStateContext as any) as any);
   const [defaultModal, setDefaultModal] = useState(getInitialDefaultModalOpen);
   const [showRegionPicker, setShowRegionPicker] = useState(false);
 
