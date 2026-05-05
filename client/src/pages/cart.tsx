@@ -206,7 +206,9 @@ export default function Cart() {
   };
 
   function generateDeliveryFee(): number {
-    if (!cartItems.length || !configData.length || !deliveryCountry) return 0;
+    if (!cartItems.length || !configData.length) return 0;
+
+    const deliveryCountry = origin?.sourceOrigin === "0" ? "Usa" : origin?.sourceOrigin === "1" ? "Nigeria" : origin?.sourceOrigin === "2" ? "Uk" : origin?.sourceOrigin === "3" ? "Canada" : "";
 
     // find the matching config for the deliveryCountry
     const matchedConfig = configData.find((config) =>
@@ -351,10 +353,10 @@ export default function Cart() {
       const result = await paymentService.initiate(data);
       if (result) {
         setPaymentPage(true)
-        setTimeout(() => {
-          window.location.href = result.paystack.data?.authorization_url;
+        // setTimeout(() => {
+        //   window.location.href = result.paystack.data?.authorization_url;
 
-        }, 1400)
+        // }, 1400)
 
       }
       else {
@@ -919,7 +921,7 @@ export default function Cart() {
               </h4>
             </div>
             <div className="flex justify-between">
-              <h4 className="">Payable Amount - Only ($) Accepted </h4>
+              <h4 className="">{origin.sourceOrigin === "1" ? "Final Amount" : "Final Amount in Base Currency (USD - $)"}</h4>
               {origin?.sourceOrigin === "0" &&
                 <h4 className="font-medium text-green-600">
                   {formatCurrency(calculateGrandTotal(), 'USD')}
