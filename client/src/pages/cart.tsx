@@ -352,6 +352,7 @@ export default function Cart() {
     try {
       const result = await paymentService.initiate(data);
       if (result) {
+                setIsLoading(false)
         setPaymentPage(true)
         setTimeout(() => {
           window.location.href = result.paystack.data?.authorization_url;
@@ -424,6 +425,8 @@ export default function Cart() {
     try {
       const result = await paymentService.initiate(data);
       if (result) {
+                setIsLoading(false)
+
         setPaymentPage(true)
         setTimeout(() => {
           window.location.href = result.paystack.data?.authorization_url;
