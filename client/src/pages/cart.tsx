@@ -353,10 +353,10 @@ export default function Cart() {
       const result = await paymentService.initiate(data);
       if (result) {
         setPaymentPage(true)
-        // setTimeout(() => {
-        //   window.location.href = result.paystack.data?.authorization_url;
+        setTimeout(() => {
+          window.location.href = result.paystack.data?.authorization_url;
 
-        // }, 1400)
+        }, 1400)
 
       }
       else {
