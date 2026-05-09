@@ -333,7 +333,7 @@ export default function Cart() {
       deliveryInfo: deliveryInfo,
       user_id: '6895cd9fb97e7a9fe487d6e1',
       user_email: guestData?.email,
-      currency: origin?.sourceOrigin == "1" ? 'NGN' : 'USD',
+      currency: origin?.sourceOrigin === "1" ? 'NGN' : 'USD',
       orders: cartItems?.map((d) => ({
         prod_id: d?._id,
         prod_name: d?.name,
