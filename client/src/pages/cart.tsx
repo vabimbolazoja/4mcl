@@ -208,21 +208,58 @@ export default function Cart() {
   function generateDeliveryFee(): number {
     if (!cartItems.length || !configData.length) return 0;
 
-    const deliveryCountry = origin?.sourceOrigin === "0" ? "Usa" : origin?.sourceOrigin === "1" ? "Nigeria" : origin?.sourceOrigin === "2" ? "Uk" : origin?.sourceOrigin === "3" ? "Canada" : "";
+    const deliveryCountry =
+      origin?.sourceOrigin === "0" ? "Usa"
+        : origin?.sourceOrigin === "1" ? "Nigeria"
+          : origin?.sourceOrigin === "2" ? "Uk"
+            : origin?.sourceOrigin === "3" ? "Canada"
+              : "";
 
-    // find the matching config for the deliveryCountry
-    const matchedConfig = configData.find((config) =>
-      config.country.toLowerCase().includes(deliveryCountry.toLowerCase())
-    );
+    const normalizedDeliveryCountry = String(deliveryCountry).trim().toLowerCase();
+
+    // Find the matching config for the deliveryCountry (prefer exact match).
+    const matchedConfig =
+      configData.find((config) =>
+        String(config?.country ?? "").trim().toLowerCase() === normalizedDeliveryCountry
+      ) ??
+      configData.find((config) =>
+        String(config?.country ?? "").trim().toLowerCase().includes(normalizedDeliveryCountry)
+      );
 
     if (!matchedConfig) return 0;
 
-    const pricePerKg = matchedConfig.deliveryPriceInKg;
-
-    // calculate total delivery fee
-    return cartItems.reduce((total, item) => {
-      return total + item.quantity * pricePerKg;
+    const totalQtyKg = cartItems.reduce((total, item) => {
+      return total + Number(item.quantity ?? 0);
     }, 0);
+
+    const bucketQtyRaw = Number(matchedConfig.maxqty);
+    const hasBucketQty = isFinite(bucketQtyRaw) && bucketQtyRaw > 0;
+
+    // If config provides a max quantity cap, use the "BDP + % increments" model:
+    // - If totalQty <= Max Qty for BDP => delivery = BDP
+    // - Else delivery = BDP + (increment% of BDP) * ceil((totalQty - MaxQty) / MaxQty)
+    if (hasBucketQty) {
+      const bucketQty = Math.max(1, bucketQtyRaw); // Max Qty for BDP (e.g. 5kg)
+      const basePrice = Number(matchedConfig.deliveryPriceInKg ?? 12); // BDP (e.g. 12 CAD)
+
+      const incRaw = Number(matchedConfig.increment_percentage ?? 30);
+      const incrementRate = incRaw > 1 ? incRaw / 100 : incRaw; // accept 30 or 0.3
+
+      if (!isFinite(basePrice) || basePrice <= 0) return 0;
+      if (!isFinite(incrementRate) || incrementRate < 0) return Number(basePrice.toFixed(2));
+
+      if (totalQtyKg <= bucketQty) return Number(basePrice.toFixed(2));
+
+      const extraQty = Math.max(0, totalQtyKg - bucketQty);
+      const increments = Math.ceil(extraQty / bucketQty);
+      const fee = basePrice + (basePrice * incrementRate) * increments;
+      return Number(fee.toFixed(2));
+    }
+
+    // Otherwise fallback to per-kg pricing (e.g. Nigeria-only config).
+    const pricePerKg = Number(matchedConfig.deliveryPriceInKg ?? 0);
+    if (!pricePerKg) return 0;
+    return Number((totalQtyKg * pricePerKg).toFixed(2));
   }
 
   const calculateGrandTotal = (): string | number => {
