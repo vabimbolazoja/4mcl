@@ -89,9 +89,14 @@ export default function Footer() {
             
               <a href="https://www.instagram.com/4_market_days" target="_blank" className="text-slate-400 hover:text-white transition-colors">
                 <span className="sr-only">Instagram</span>
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447c0-1.297.49-2.448 1.297-3.323.875-.807 2.026-1.297 3.323-1.297 1.297 0 2.448.49 3.323 1.297.875.875 1.297 2.026 1.297 3.323 0 1.297-.422 2.448-1.297 3.323-.875.807-2.026 1.297-3.323 1.297z" />
-                </svg>
+                <svg
+  xmlns="http://www.w3.org/2000/svg"
+  className="h-6 w-6"
+  fill="currentColor"
+  viewBox="0 0 24 24"
+>
+  <path d="M7.75 2C4.574 2 2 4.574 2 7.75v8.5C2 19.426 4.574 22 7.75 22h8.5C19.426 22 22 19.426 22 16.25v-8.5C22 4.574 19.426 2 16.25 2h-8.5zm0 1.8h8.5a3.95 3.95 0 0 1 3.95 3.95v8.5a3.95 3.95 0 0 1-3.95 3.95h-8.5a3.95 3.95 0 0 1-3.95-3.95v-8.5A3.95 3.95 0 0 1 7.75 3.8zm8.95 1.35a1.15 1.15 0 1 0 0 2.3 1.15 1.15 0 0 0 0-2.3zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 1.8A3.2 3.2 0 1 1 8.8 12 3.2 3.2 0 0 1 12 8.8z" />
+</svg>
               </a>
               <a href="https://www.instagram.com/4_market_days" target="_blank" className="text-slate-400 hover:text-white transition-colors">
                 <span className="sr-only">Tiktok</span>
