@@ -52,7 +52,7 @@ export default function Hero() {
                   <span className="text-primary-600 text-lg sm:text-2xl">❤️</span>
                 </div>
                 <div>
-                  <p className="text-slate-900 font-semibold text-sm sm:text-base">150+</p>
+                  <p className="text-slate-900 font-semibold text-sm sm:text-base">1500+</p>
                   <p className="text-slate-600 text-xs sm:text-sm">Happy Customers Already</p>
                 </div>
               </div>
