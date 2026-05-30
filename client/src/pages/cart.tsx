@@ -115,7 +115,7 @@ export default function Cart() {
       setConfigData(arr)
 
     } catch (err: any) {
-
+      console.error("Failed to load delivery config:", err);
     }
   }
 
