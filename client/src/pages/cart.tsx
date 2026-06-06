@@ -18,6 +18,25 @@ import { useForm, Controller } from 'react-hook-form';
 import configService from "../services/config-service"
 import Location from "../components/Location/index"
 import { useCurrencyConvert } from "../hooks/useCurrencyConvert"
+
+// Keys align with sourceOrigin / SOURCE_BY_COUNTRY in header.tsx
+const ORIGIN_CONFIG_ALIASES: Record<string, string[]> = {
+  "0": ["usa", "united states"],
+  "1": ["nigeria"],
+  "2": ["uk", "united kingdom", "great britain"],
+  "3": ["canada"],
+};
+
+function findConfigForOrigin(configData: any[], sourceOrigin: string | undefined) {
+  const aliases = ORIGIN_CONFIG_ALIASES[sourceOrigin ?? ""] ?? [];
+  if (!aliases.length) return undefined;
+
+  return configData.find((config) => {
+    const country = String(config?.country ?? "").trim().toLowerCase();
+    return aliases.some((alias) => country === alias);
+  });
+}
+
 export default function Cart() {
 
 
@@ -208,23 +227,7 @@ export default function Cart() {
   function generateDeliveryFee(): number {
     if (!cartItems.length || !configData.length) return 0;
 
-    const deliveryCountry =
-      origin?.sourceOrigin === "0" ? "Usa"
-        : origin?.sourceOrigin === "1" ? "Nigeria"
-          : origin?.sourceOrigin === "2" ? "Uk"
-            : origin?.sourceOrigin === "3" ? "Canada"
-              : "";
-
-    const normalizedDeliveryCountry = String(deliveryCountry).trim().toLowerCase();
-
-    // Find the matching config for the deliveryCountry (prefer exact match).
-    const matchedConfig =
-      configData.find((config) =>
-        String(config?.country ?? "").trim().toLowerCase() === normalizedDeliveryCountry
-      ) ??
-      configData.find((config) =>
-        String(config?.country ?? "").trim().toLowerCase().includes(normalizedDeliveryCountry)
-      );
+    const matchedConfig = findConfigForOrigin(configData, origin?.sourceOrigin);
 
     if (!matchedConfig) return 0;
 
