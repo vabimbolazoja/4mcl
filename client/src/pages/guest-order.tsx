@@ -38,7 +38,7 @@ export default function Login() {
         setIsLoading(true)
         var urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get("order_id");
-        const ref = urlParams.get("reference");
+        const ref = urlParams.get("tx_ref");
         const orderref = urlParams.get("order_ref");
         if (id && ref) {
             setOrderRef(orderref)

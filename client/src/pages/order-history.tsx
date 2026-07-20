@@ -148,8 +148,10 @@ export default function OrderHistory() {
 
   useEffect(() => {
     var urlParams = new URLSearchParams(window.location.search);
+
+
     const id = urlParams.get("order_id");
-    const ref = urlParams.get("trxref");
+    const ref = urlParams.get("tx_ref");
     if (id && ref) {
       verifyPayment(id, ref)
     }

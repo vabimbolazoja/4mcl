@@ -379,7 +379,7 @@ export default function Cart() {
         prod_name: d?.name,
         moq: d?.moq,
         image: d?.imageUrls[0],
-        price: origin?.sourceOrigin  === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada,
+        price: origin?.sourceOrigin === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada,
         qty: d?.quantity,
         subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada),
         deliveryCost: generateDeliveryFee()
@@ -391,11 +391,12 @@ export default function Cart() {
     }
     try {
       const result = await paymentService.initiate(data);
+      console.log(result)
       if (result) {
-                setIsLoading(false)
+        setIsLoading(false)
         setPaymentPage(true)
         setTimeout(() => {
-          window.location.href = result.paystack.data?.authorization_url;
+          window.location.href = result?.payment_link;
 
         }, 1400)
 
@@ -453,7 +454,7 @@ export default function Cart() {
         prod_name: d?.name,
         moq: d?.moq,
         image: d?.imageUrls[0],
-        price: origin?.sourceOrigin  === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada,
+        price: origin?.sourceOrigin === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada,
         qty: d?.quantity,
         subtotal: d?.quantity * (origin?.sourceOrigin === '0' ? d?.priceUsd : origin?.sourceOrigin === "1" ? d?.priceNaira : origin?.sourceOrigin === "2" ? d?.priceGbp : d?.priceCanada),
       })),
@@ -465,11 +466,11 @@ export default function Cart() {
     try {
       const result = await paymentService.initiate(data);
       if (result) {
-                setIsLoading(false)
+        setIsLoading(false)
 
         setPaymentPage(true)
         setTimeout(() => {
-          window.location.href = result.paystack.data?.authorization_url;
+          window.location.href = result?.payment_link;
 
         }, 1400)
 
@@ -533,15 +534,15 @@ export default function Cart() {
                           <h3 className="font-semibold text-slate-900 text-sm sm:text-base">{item.name}</h3>
                           {origin?.sourceOrigin !== "" &&
                             <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
-   {
-                            origin?.sourceOrigin === "2"
-                              ? `₤${(parseFloat(item.priceGbp)).toFixed(2)}`
-                              : origin?.sourceOrigin === "3"
-                                ? `C$${(parseFloat(item.priceCanada)).toFixed(2)}`
-                                : origin?.sourceOrigin === "0"
-                                  ? `$${(parseFloat(item.priceUsd)).toFixed(2)}`
-                                  : `₦${(parseFloat(item.priceNaira)).toLocaleString()}`
-                          }
+                              {
+                                origin?.sourceOrigin === "2"
+                                  ? `₤${(parseFloat(item.priceGbp)).toFixed(2)}`
+                                  : origin?.sourceOrigin === "3"
+                                    ? `C$${(parseFloat(item.priceCanada)).toFixed(2)}`
+                                    : origin?.sourceOrigin === "0"
+                                      ? `$${(parseFloat(item.priceUsd)).toFixed(2)}`
+                                      : `₦${(parseFloat(item.priceNaira)).toLocaleString()}`
+                              }
                             </p>}
                           <p className="text-primary-600 font-bold text-sm sm:text-base mt-1">
                             MOQ: {item?.moq}
@@ -634,7 +635,7 @@ export default function Cart() {
                       size="sm"
                       className="flex-1"
                     >
-                       (₦)
+                      (₦)
                     </Button>
                   </div>
                 </div>
