@@ -7,8 +7,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 import authService from "../services/auth-service"
-import { message } from "antd";
+import {
+  BUSINESS,
+  canadaAddressLine,
+  nigeriaAddressLine,
+} from "@/lib/business-info";
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -23,26 +29,32 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email Us",
-      content: "customerservice@4marketdays.com",
-      description: "Send us an email anytime"
+      content: BUSINESS.email,
+      description: `Also: ${BUSINESS.supportEmail}`
     },
     {
       icon: Phone,
       title: "Call Us",
-      content: "+1 (506) 650 8084 , +2349032023215",
-      description: "Mon-Fri 9AM-6PM EST"
+      content: BUSINESS.phones.join(" · "),
+      description: BUSINESS.hours.weekday
     },
     {
       icon: MapPin,
-      title: "Visit Us",
-      content: "661 Millidge Ave, Saint John, Nigeria: 14 Odenigwe Road Near Ankys Bakery Nsukka, Enugu State Nigeria",
-      description: "New York, NY 10001"
+      title: "Canada Address",
+      content: canadaAddressLine,
+      description: "Physical operating address"
+    },
+    {
+      icon: MapPin,
+      title: "Nigeria Address",
+      content: nigeriaAddressLine,
+      description: "Physical operating address"
     },
     {
       icon: Clock,
       title: "Business Hours",
-      content: "Mon-Fri: 9AM-6PM EST",
-      description: "Sat: 10AM-4PM EST"
+      content: BUSINESS.hours.weekday,
+      description: BUSINESS.hours.saturday
     }
   ];
 
@@ -111,7 +123,7 @@ export default function Contact() {
       {/* Contact Information */}
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
             {contactInfo.map((info, index) => (
               <Card key={index} className="text-center hover:shadow-xl transition-shadow">
                 <CardContent className="p-6 sm:p-8">
@@ -228,7 +240,10 @@ export default function Contact() {
                 
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-2">What's your return policy?</h4>
-                  <p className="text-slate-600 text-sm sm:text-base">We offer a 14-day return policy for non-perishable items in original condition.</p>
+                  <p className="text-slate-600 text-sm sm:text-base">
+                    We offer a 14-day return policy for non-perishable items in original condition.{" "}
+                    See our full <Link href="/refund" className="text-primary-600 hover:underline">Refund Policy</Link>.
+                  </p>
                 </div>
                 
                 <div>

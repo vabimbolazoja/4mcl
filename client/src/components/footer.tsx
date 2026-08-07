@@ -79,6 +79,12 @@ export default function Footer() {
             <p className="text-slate-300 mb-4 sm:mb-6 max-w-md text-sm sm:text-base leading-relaxed">
               Connecting diaspora communities with authentic African foods. Quality ingredients, delivered worldwide with love and care.
             </p>
+            <div className="text-slate-400 text-xs sm:text-sm space-y-1 mb-4 sm:mb-6 max-w-md">
+              <p>customerservice@4marketdays.com</p>
+              <p>+1 (506) 650 8084 · +234 903 202 3215</p>
+              <p>661 Millidge Ave, Saint John, NB, Canada</p>
+              <p>14 Odenigwe Road, Nsukka, Enugu State, Nigeria</p>
+            </div>
             <div className="flex space-x-4">
               <a href="https://web.facebook.com/4marketdays?_rdc=1&_rdr#" target="_blank"  className="text-slate-400 hover:text-white transition-colors">
                 <span className="sr-only">Facebook</span>
@@ -131,6 +137,7 @@ export default function Footer() {
             <ul className="space-y-1 sm:space-y-2">
               <li><a href="/contact" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Contact Us</a></li>
               <li><a href="/contact" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">FAQs</a></li>
+              <li><a href="/refund" className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base">Refund Policy</a></li>
             </ul>
           </div>
         </div>
@@ -138,9 +145,9 @@ export default function Footer() {
         <div className="border-t border-slate-800 mt-8 sm:mt-12 pt-6 sm:pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-slate-400 text-xs sm:text-sm text-center md:text-left">© 2024 4marketdays. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            <a href="#" className="text-slate-400 hover:text-white transition-colors text-xs sm:text-sm">Privacy Policy</a>
-            <a href="#" className="text-slate-400 hover:text-white transition-colors text-xs sm:text-sm">Terms of Service</a>
-            <a href="#" className="text-slate-400 hover:text-white transition-colors text-xs sm:text-sm">Cookie Policy</a>
+            <a href="/privacy" className="text-slate-400 hover:text-white transition-colors text-xs sm:text-sm">Privacy Policy</a>
+            <a href="/terms" className="text-slate-400 hover:text-white transition-colors text-xs sm:text-sm">Terms & Conditions</a>
+            <a href="/refund" className="text-slate-400 hover:text-white transition-colors text-xs sm:text-sm">Refund Policy</a>
           </div>
         </div>
       </div>

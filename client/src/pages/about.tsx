@@ -1,8 +1,14 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
-import { Leaf, Users, Heart, Globe } from "lucide-react";
+import { Leaf, Users, Heart, Globe, Mail, MapPin } from "lucide-react";
+import { Link } from "wouter";
 import heroiMG from "../../attached_assets/WhatsApp Image 2025-07-06 at 08.28.25.jpeg"
+import {
+  BUSINESS,
+  canadaAddressLine,
+  nigeriaAddressLine,
+} from "@/lib/business-info";
 
 export default function About() {
   const values = [
@@ -64,7 +70,8 @@ export default function About() {
               </p>
               <p className="text-slate-600 leading-relaxed">
                 Today, we're proud to be the bridge that connects diaspora communities with their culinary heritage, 
-                one authentic ingredient at a time.
+                one authentic ingredient at a time. We sell and ship African grocery products to customers in the{" "}
+                {BUSINESS.shippingRegions.join(", ")}.
               </p>
             </div>
             <div className="relative">
@@ -75,6 +82,54 @@ export default function About() {
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Business Information — required for payment compliance visibility */}
+      <section className="py-12 sm:py-16 bg-white border-y border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">Business Information</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              {BUSINESS.name} operates as an online African grocery marketplace. Our contact details and
+              operating addresses match the information on our payment merchant profile.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
+                <Mail className="h-5 w-5 text-primary-600" />
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">Email & Phone</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">{BUSINESS.email}</p>
+              <p className="text-slate-600 text-sm leading-relaxed">{BUSINESS.supportEmail}</p>
+              <p className="text-slate-600 text-sm leading-relaxed mt-2">{BUSINESS.phones.join(" · ")}</p>
+            </div>
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
+                <MapPin className="h-5 w-5 text-primary-600" />
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">Canada</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">{canadaAddressLine}</p>
+            </div>
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
+                <MapPin className="h-5 w-5 text-primary-600" />
+              </div>
+              <h3 className="font-semibold text-slate-900 mb-2">Nigeria</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">{nigeriaAddressLine}</p>
+            </div>
+          </div>
+          <p className="text-center text-sm text-slate-500 mt-8">
+            Policies:{" "}
+            <Link href="/terms" className="text-primary-600 hover:underline">Terms & Conditions</Link>
+            {" · "}
+            <Link href="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>
+            {" · "}
+            <Link href="/refund" className="text-primary-600 hover:underline">Refund Policy</Link>
+            {" · "}
+            <Link href="/contact" className="text-primary-600 hover:underline">Contact Us</Link>
+          </p>
         </div>
       </section>
 

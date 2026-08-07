@@ -25,6 +25,9 @@ import ProductCategory from "@/pages/product-by-categories"
 import GuestOrder from "@/pages/guest-order"
 import TrackOrder from "@/pages/track-order"
 import StoreLocations from "@/pages/stores"
+import Terms from "@/pages/terms"
+import Privacy from "@/pages/privacy"
+import Refund from "@/pages/refund"
 import Test from "./pages/test"
 import 'animate.css';
 
@@ -94,6 +97,9 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/products" component={Products} />
       <Route path="/contact" component={Contact} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/refund" component={Refund} />
       <Route path="/categories" component={Categories} />
       <Route path="/verify-mail" component={VerifyMail} />
       <Route path="/forgot-password" component={ForgotPassword} />
