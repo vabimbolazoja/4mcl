@@ -4,18 +4,21 @@ export const BUSINESS = {
   legalName: "4marketdays",
   email: "customerservice@4marketdays.com",
   supportEmail: "support@4marketdays.com",
-  phones: ["+1 (506) 650 8084", "+234 903 202 3215"],
+  phones: [
+    // "+1 (506) 650 8084", // international — commented off
+    "08062943817",
+  ],
   addresses: {
-    canada: {
-      label: "Canada",
-      lines: ["661 Millidge Ave", "Saint John, NB", "Canada"],
-    },
+    // canada: {
+    //   label: "Canada",
+    //   lines: ["661 Millidge Ave", "Saint John, NB", "Canada"],
+    // },
     nigeria: {
       label: "Nigeria",
       lines: [
-        "14 Odenigwe Road",
-        "Near Ankys Bakery, Nsukka",
-        "Enugu State, Nigeria",
+        "BLOCK 24 CITIVIEW ESTATE",
+        "WAREWA OGUN STATE",
+        "NIGERIA",
       ],
     },
   },
@@ -27,5 +30,5 @@ export const BUSINESS = {
   website: "https://4marketdays.com",
 } as const;
 
-export const canadaAddressLine = BUSINESS.addresses.canada.lines.join(", ");
+// export const canadaAddressLine = BUSINESS.addresses.canada.lines.join(", ");
 export const nigeriaAddressLine = BUSINESS.addresses.nigeria.lines.join(", ");

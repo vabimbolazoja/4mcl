@@ -81,9 +81,10 @@ export default function Footer() {
             </p>
             <div className="text-slate-400 text-xs sm:text-sm space-y-1 mb-4 sm:mb-6 max-w-md">
               <p>customerservice@4marketdays.com</p>
-              <p>+1 (506) 650 8084 · +234 903 202 3215</p>
-              <p>661 Millidge Ave, Saint John, NB, Canada</p>
-              <p>14 Odenigwe Road, Nsukka, Enugu State, Nigeria</p>
+              {/* <p>+1 (506) 650 8084 · +234 903 202 3215</p> */}
+              <p>08062943817</p>
+              {/* <p>661 Millidge Ave, Saint John, NB, Canada</p> */}
+              <p>BLOCK 24 CITIVIEW ESTATE, WAREWA OGUN STATE, NIGERIA</p>
             </div>
             <div className="flex space-x-4">
               <a href="https://web.facebook.com/4marketdays?_rdc=1&_rdr#" target="_blank"  className="text-slate-400 hover:text-white transition-colors">

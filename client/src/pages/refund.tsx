@@ -1,7 +1,7 @@
 import LegalPageShell from "@/components/legal-page-shell";
 import {
   BUSINESS,
-  canadaAddressLine,
+  // canadaAddressLine,
   nigeriaAddressLine,
 } from "@/lib/business-info";
 import { Link } from "wouter";
@@ -128,8 +128,8 @@ export default function Refund() {
         <br />
         <strong>Phone:</strong> {BUSINESS.phones.join(" · ")}
         <br />
-        <strong>Canada:</strong> {canadaAddressLine}
-        <br />
+        {/* <strong>Canada:</strong> {canadaAddressLine}
+        <br /> */}
         <strong>Nigeria:</strong> {nigeriaAddressLine}
       </p>
       <p>

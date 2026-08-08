@@ -11,7 +11,7 @@ import { Link } from "wouter";
 import authService from "../services/auth-service"
 import {
   BUSINESS,
-  canadaAddressLine,
+  // canadaAddressLine,
   nigeriaAddressLine,
 } from "@/lib/business-info";
 
@@ -38,12 +38,13 @@ export default function Contact() {
       content: BUSINESS.phones.join(" · "),
       description: BUSINESS.hours.weekday
     },
-    {
-      icon: MapPin,
-      title: "Canada Address",
-      content: canadaAddressLine,
-      description: "Physical operating address"
-    },
+    // Canada address — commented off
+    // {
+    //   icon: MapPin,
+    //   title: "Canada Address",
+    //   content: canadaAddressLine,
+    //   description: "Physical operating address"
+    // },
     {
       icon: MapPin,
       title: "Nigeria Address",

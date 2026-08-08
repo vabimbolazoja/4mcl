@@ -6,7 +6,7 @@ import { Link } from "wouter";
 import heroiMG from "../../attached_assets/WhatsApp Image 2025-07-06 at 08.28.25.jpeg"
 import {
   BUSINESS,
-  canadaAddressLine,
+  // canadaAddressLine,
   nigeriaAddressLine,
 } from "@/lib/business-info";
 
@@ -95,7 +95,7 @@ export default function About() {
               operating addresses match the information on our payment merchant profile.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
             <div className="text-center md:text-left">
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
                 <Mail className="h-5 w-5 text-primary-600" />
@@ -105,6 +105,7 @@ export default function About() {
               <p className="text-slate-600 text-sm leading-relaxed">{BUSINESS.supportEmail}</p>
               <p className="text-slate-600 text-sm leading-relaxed mt-2">{BUSINESS.phones.join(" · ")}</p>
             </div>
+            {/* Canada address — commented off
             <div className="text-center md:text-left">
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
                 <MapPin className="h-5 w-5 text-primary-600" />
@@ -112,6 +113,7 @@ export default function About() {
               <h3 className="font-semibold text-slate-900 mb-2">Canada</h3>
               <p className="text-slate-600 text-sm leading-relaxed">{canadaAddressLine}</p>
             </div>
+            */}
             <div className="text-center md:text-left">
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
                 <MapPin className="h-5 w-5 text-primary-600" />
