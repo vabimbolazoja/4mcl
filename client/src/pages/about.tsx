@@ -102,7 +102,6 @@ export default function About() {
               </div>
               <h3 className="font-semibold text-slate-900 mb-2">Email & Phone</h3>
               <p className="text-slate-600 text-sm leading-relaxed">{BUSINESS.email}</p>
-              <p className="text-slate-600 text-sm leading-relaxed">{BUSINESS.supportEmail}</p>
               <p className="text-slate-600 text-sm leading-relaxed mt-2">{BUSINESS.phones.join(" · ")}</p>
             </div>
             {/* Canada address — commented off

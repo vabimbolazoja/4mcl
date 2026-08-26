@@ -30,7 +30,7 @@ export default function Contact() {
       icon: Mail,
       title: "Email Us",
       content: BUSINESS.email,
-      description: `Also: ${BUSINESS.supportEmail}`
+      description: "For orders and general inquiries"
     },
     {
       icon: Phone,
