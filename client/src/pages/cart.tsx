@@ -37,6 +37,18 @@ function findConfigForOrigin(configData: any[], sourceOrigin: string | undefined
   });
 }
 
+function concatDeliveryAddress(info: any, fallback = "") {
+  if (!info) return fallback;
+  if (typeof info === "string") return info.trim() || fallback;
+
+  const primary = String(info.clearAddress || info.accuracy || "").trim();
+  const extras = [info.city, info.state, info.postalcode].filter((part) => {
+    if (!part) return false;
+    return !primary.toLowerCase().includes(String(part).toLowerCase());
+  });
+  return [primary, ...extras].filter(Boolean).join(", ") || fallback;
+}
+
 export default function Cart() {
 
 
@@ -362,7 +374,7 @@ export default function Cart() {
       name: guestData?.fullName,
       email: guestData?.email,
       phone: guestData?.phone,
-      address: guestData?.deliveryAddress ? guestData?.deliveryAddress : "USA",
+      address: concatDeliveryAddress(guestAddressInfo, guestData?.deliveryAddress) || guestAddress || "USA",
     }
 
     console.log(origin?.sourceOrigin)
@@ -441,7 +453,7 @@ export default function Cart() {
       name: formData?.fullName,
       email: formData?.email,
       phone: formData?.phone,
-      address: formData?.deliveryAddress ? formData?.deliveryAddress : "USA",
+      address: concatDeliveryAddress(userAddressInfo, formData?.deliveryAddress) || userAddress || "USA",
     }
 
     const data = {
@@ -668,9 +680,16 @@ export default function Cart() {
                       {sessionStorage?.getItem('4mttoken') ?
                         <form onSubmit={(e) => {
                           e.preventDefault()
-                          if (!userAddressInfo) {
+                          const deliveryAddress = concatDeliveryAddress(userAddressInfo, userAddress)
+                          if (!deliveryAddress) {
+                            toast({
+                              title: "Delivery address",
+                              description: "Please enter a delivery address to continue.",
+                              variant: "destructive",
+                            });
                             return;
                           }
+                          setFormData((prev) => ({ ...prev, deliveryAddress }))
                           setOpenCardDetails(true)
                         }} className="space-y-6">
 
@@ -762,9 +781,16 @@ export default function Cart() {
 
                               <form onSubmit={(e) => {
                                 e.preventDefault()
-                                if (!guestAddressInfo) {
+                                const deliveryAddress = concatDeliveryAddress(guestAddressInfo, guestAddress)
+                                if (!deliveryAddress) {
+                                  toast({
+                                    title: "Delivery address",
+                                    description: "Please enter a delivery address to continue.",
+                                    variant: "destructive",
+                                  });
                                   return;
                                 }
+                                setGuestData((prev) => ({ ...prev, deliveryAddress }))
                                 setOpenCardDetails(true)
                               }} className="space-y-6">
                                 <div>
