@@ -59,16 +59,16 @@ export default function About() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4 sm:mb-6">Our Story</h2>
-              <p className="text-slate-600 mb-4 sm:mb-6 leading-relaxed">
+              <p className="text-lg sm:text-xl text-slate-600 mb-4 sm:mb-6 leading-relaxed">
                 4marketdays was born from a simple desire - to bring the authentic taste of home to African communities living abroad. 
                 Founded by diaspora members who understood the challenge of finding quality African foods in foreign lands.
               </p>
-              <p className="text-slate-600 mb-4 sm:mb-6 leading-relaxed">
+              <p className="text-lg sm:text-xl text-slate-600 mb-4 sm:mb-6 leading-relaxed">
                 What started as a small initiative to help families access traditional ingredients has grown into a trusted platform 
                 serving thousands of customers worldwide. We work directly with farmers and suppliers across Africa to ensure 
                 every product meets our high standards for quality and authenticity.
               </p>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-lg sm:text-xl text-slate-600 leading-relaxed">
                 Today, we're proud to be the bridge that connects diaspora communities with their culinary heritage, 
                 one authentic ingredient at a time. We sell and ship African grocery products to customers in the{" "}
                 {BUSINESS.shippingRegions.join(", ")}.
@@ -90,7 +90,7 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">Business Information</h2>
-            <p className="text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
               {BUSINESS.name} operates as an online African grocery marketplace. Our contact details and
               operating addresses match the information on our payment merchant profile.
             </p>
@@ -100,9 +100,9 @@ export default function About() {
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
                 <Mail className="h-5 w-5 text-primary-600" />
               </div>
-              <h3 className="font-semibold text-slate-900 mb-2">Email & Phone</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">{BUSINESS.email}</p>
-              <p className="text-slate-600 text-sm leading-relaxed mt-2">{BUSINESS.phones.join(" · ")}</p>
+              <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-2">Email & Phone</h3>
+              <p className="text-lg sm:text-xl text-slate-600 leading-relaxed">{BUSINESS.email}</p>
+              <p className="text-lg sm:text-xl text-slate-600 leading-relaxed mt-2">{BUSINESS.phones.join(" · ")}</p>
             </div>
             {/* Canada address — commented off
             <div className="text-center md:text-left">
@@ -117,11 +117,11 @@ export default function About() {
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 mb-3">
                 <MapPin className="h-5 w-5 text-primary-600" />
               </div>
-              <h3 className="font-semibold text-slate-900 mb-2">Nigeria</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">{nigeriaAddressLine}</p>
+              <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-2">Nigeria</h3>
+              <p className="text-lg sm:text-xl text-slate-600 leading-relaxed">{nigeriaAddressLine}</p>
             </div>
           </div>
-          <p className="text-center text-sm text-slate-500 mt-8">
+          <p className="text-center text-lg sm:text-xl text-slate-600 mt-8">
             Policies:{" "}
             <Link href="/terms" className="text-primary-600 hover:underline">Terms & Conditions</Link>
             {" · "}
@@ -152,7 +152,7 @@ export default function About() {
                     <value.icon className="text-primary-600 h-6 w-6 sm:h-8 sm:w-8" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-3 sm:mb-4">{value.title}</h3>
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed">{value.description}</p>
+                  <p className="text-lg sm:text-xl text-slate-600 leading-relaxed">{value.description}</p>
                 </CardContent>
               </Card>
             ))}

@@ -32,6 +32,75 @@ interface Product {
   storageInstructions?: string;
 }
 
+type NutritionLine =
+  | { kind: "heading"; text: string }
+  | { kind: "stat"; label: string; value: string }
+  | { kind: "item"; label: string; detail: string }
+  | { kind: "text"; text: string };
+
+function parseNutritionalLine(line: string): NutritionLine {
+  const dash = line.match(/^([^–—(]{2,48}?)\s+[–—]\s+(.+)$/);
+  if (dash) {
+    return { kind: "item", label: dash[1].trim(), detail: dash[2].trim() };
+  }
+
+  const labeled = line.match(/^([^:]{2,60}):\s+(.+)$/);
+  if (labeled) {
+    const label = labeled[1].trim();
+    const value = labeled[2].trim();
+    const isSentence = value.length > 55 || /[.!?]$/.test(value);
+    if (isSentence) return { kind: "item", label, detail: value };
+    return { kind: "stat", label, value };
+  }
+
+  const isTitle = line.length <= 90 && !/[.!?]$/.test(line) && !line.endsWith(":");
+  if (isTitle) return { kind: "heading", text: line };
+  return { kind: "text", text: line };
+}
+
+function NutritionalInfo({ text }: { text: string }) {
+  const lines = text
+    .replace(/\r\n/g, "\n")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map(parseNutritionalLine);
+
+  return (
+    <div className="text-base text-slate-600 leading-relaxed space-y-3">
+      {lines.map((line, index) => {
+        if (line.kind === "heading") {
+          return (
+            <p key={index} className="font-semibold text-slate-900 pt-2 first:pt-0">
+              {line.text}
+            </p>
+          );
+        }
+
+        if (line.kind === "stat") {
+          return (
+            <p key={index} className="pl-4">
+              <span className="font-medium text-slate-900">{line.label}:</span> {line.value}
+            </p>
+          );
+        }
+
+        if (line.kind === "item") {
+          return (
+            <p key={index} className="pl-4 border-l-2 border-emerald-200">
+              <span className="font-medium text-slate-900">{line.label}</span>
+              <span className="text-slate-400"> — </span>
+              {line.detail}
+            </p>
+          );
+        }
+
+        return <p key={index} className="pl-4">{line.text}</p>;
+      })}
+    </div>
+  );
+}
+
 export default function ProductDetail() {
   const [, params] = useRoute("/product/:id");
   const [selectedImage, setSelectedImage] = useState(0);
@@ -308,9 +377,9 @@ export default function ProductDetail() {
               {/* Product Details */}
               <div className="space-y-4">
                 <Card>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-slate-900 mb-2">Nutritional Information</h3>
-                    <p className="text-slate-600 text-sm">{product.nutritionalInfo}</p>
+                  <CardContent className="p-5">
+                    <h3 className="font-semibold text-slate-900 mb-4">Nutritional Information</h3>
+                    {product.nutritionalInfo ? <NutritionalInfo text={product.nutritionalInfo} /> : null}
                   </CardContent>
                 </Card>
                 <Card>
