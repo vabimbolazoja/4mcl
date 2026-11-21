@@ -7,6 +7,7 @@ import { useCart } from '../context/cartContext';
 import { useToast } from "@/hooks/use-toast";
 import { Modal } from "antd";
 import { convertToCAD, convertToGBP } from "../lib/utils"
+import { isAvailableInShopperRegion, REGION_NAME_BY_ORIGIN } from "../lib/region-availability"
 
 function formatCurrency(
   amount: number | string | null | undefined,
@@ -35,6 +36,11 @@ interface ProductCardProps {
     rating?: string;
     reviewCount?: number;
     category?: any;
+    stock?: number;
+    availableInNigeria?: boolean;
+    availableInUsa?: boolean;
+    availableInCanada?: boolean;
+    availableInUk?: boolean;
   };
   origin: string;
 }
@@ -50,7 +56,27 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
   const { toast } = useToast();
 
 
+  const inStock = !(product?.stock < 1);
+  const availableHere = isAvailableInShopperRegion(product, origin);
+  const regionName = REGION_NAME_BY_ORIGIN[origin] || "your region";
+
   const handleAddToCart = async () => {
+    if (!availableHere) {
+      toast({
+        title: "Unavailable",
+        description: `${product?.name} is not available in ${regionName}.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!inStock) {
+      toast({
+        title: "Sold Out",
+        description: `${product?.name} is out of stock.`,
+        variant: "destructive",
+      });
+      return;
+    }
     setIsAdding(true);
     const cartItem = state.items.find(item => item._id === product._id);
     if (cartItem?._id) {
@@ -108,9 +134,12 @@ export default function ProductCard({ product, origin }: ProductCardProps) {
               <span className="text-base sm:text-lg font-bold text-slate-900">
                 {origin === '1' ? '₦' : origin === '2' ? '₤' : origin === '3' ? 'C$' : '$'}{origin === "0" ? product.priceUsd?.toLocaleString() : origin === "1" ? product?.priceNaira?.toLocaleString() : origin === "2" ? product?.priceGbp?.toLocaleString() : product?.priceCanada?.toLocaleString()}
               </span>            </div>
-            {product?.stock < 1 ?
+            {!inStock ?
               <div style={{ border: '1px solid red', background: 'red', padding: '8px', color: 'white', borderRadius: '10px' }}>
                 Sold Out
+              </div> : !availableHere ?
+              <div style={{ border: '1px solid #64748b', background: '#64748b', padding: '8px', color: 'white', borderRadius: '10px', textAlign: 'center' }}>
+                Unavailable
               </div> :
               <Button
                 onClick={handleAddToCart}

@@ -15,6 +15,7 @@ import { ThreeDots } from "react-loader-spinner";
 import { GlobalStateContext } from "../context/globalContext"
 import config from "../../src/config"
 import { cartItems } from "@shared/schema";
+import { isAvailableInShopperRegion, REGION_NAME_BY_ORIGIN } from "../lib/region-availability";
 interface Product {
   id: number;
   name: string;
@@ -122,7 +123,27 @@ export default function ProductDetail() {
 
   const { state, addItem } = useCart();
 
+  const inStock = !(product?.stock < 1);
+  const availableHere = isAvailableInShopperRegion(product, origin?.sourceOrigin);
+  const regionName = REGION_NAME_BY_ORIGIN[origin?.sourceOrigin] || "your region";
+
   const handleAddToCart = async () => {
+    if (!availableHere) {
+      toast({
+        title: "Unavailable",
+        description: `${product?.name} is not available in ${regionName}.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!inStock) {
+      toast({
+        title: "Sold Out",
+        description: `${product?.name} is out of stock.`,
+        variant: "destructive",
+      });
+      return;
+    }
     if (quantity >= product?.moq) {
       setIsAdding(true);
       const cartItem = state.items.find(item => item._id === product._id);
@@ -316,7 +337,7 @@ export default function ProductDetail() {
 
               {/* Quantity and Add to Cart */}
               <div className="flex items-center space-x-4 mb-8">
-                {product?.stock > 0 &&
+                {inStock && availableHere &&
                   <div className="flex items-center border border-slate-200 rounded-lg">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -332,13 +353,20 @@ export default function ProductDetail() {
                       +
                     </button>
                   </div>}
-                {product?.stock < 1 ?
+                {!inStock ?
                   <Button
                     className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 py-3"
                     style={{ background: 'red', border: '1px solid red', color: 'white' }}
                   >
                     <ShoppingCart className="h-5 w-5 mr-2" />
                     Sold Out
+                  </Button> : !availableHere ?
+                  <Button
+                    className="flex-1 py-3"
+                    style={{ background: '#64748b', border: '1px solid #64748b', color: 'white' }}
+                  >
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Not available in {regionName}
                   </Button> :
                   <Button
                     onClick={handleAddToCart}
